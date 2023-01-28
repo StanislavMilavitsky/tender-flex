@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TenderFlexApplication {
+public class TenderFlexApplicationRunner {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TenderFlexApplication.class, args);
+		SpringApplication.run(TenderFlexApplicationRunner.class, args);
 	}
 
 }
