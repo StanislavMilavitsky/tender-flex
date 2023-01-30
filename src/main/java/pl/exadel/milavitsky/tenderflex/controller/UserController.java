@@ -7,6 +7,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,8 @@ public class UserController extends PageController<User> {
      * @throws ServiceException    if cant find user
      * @throws ControllerException if negative id
      */
-    @GetMapping("/{id}/find-by-id")
-    @PostAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<User> findById(@PathVariable(name = "id") Long id) throws ControllerException, ServiceException {
         if (id > 0) {
             User user = userService.findById(id);
@@ -62,7 +63,7 @@ public class UserController extends PageController<User> {
      * @throws ServiceException    the service exception
      */
 
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<User> create(@RequestBody @Valid User user, BindingResult bindingResult) throws ControllerException, ServiceException {
         if (bindingResult.hasErrors()) {
             log.error(bindingResultHandler(bindingResult));
@@ -81,7 +82,7 @@ public class UserController extends PageController<User> {
      * @throws ServiceException    the service exception
      * @throws ControllerException if entity fields not valid
      */
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseEntity<User> update(@RequestBody @Valid @Validated({CreateAction.class}) User user, BindingResult bindingResult) throws ServiceException, ControllerException {
         if (bindingResult.hasErrors()) {
             log.error(bindingResultHandler(bindingResult));
@@ -100,8 +101,8 @@ public class UserController extends PageController<User> {
      * @throws ServiceException    the service exception
      * @throws ControllerException if id is incorrect
      */
-    @DeleteMapping("/{id}/delete")
-    @PostAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> delete(@PathVariable(name = "id") Long id) throws ServiceException, ControllerException {
         if (id > 0) {
             userService.deleteById(id);
@@ -122,7 +123,7 @@ public class UserController extends PageController<User> {
      */
     @Override
     @GetMapping
-    @PostAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PagedModel<User>> findAll(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size

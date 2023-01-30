@@ -16,5 +16,16 @@ public class ConstantRepository {
     public static final String PASSWORD = "password";
     public static final String DATE_OF_REGISTRATION = "date_of_registration";
     public static final String ROLE = "role";
+    public static final String COMPANY = "company";
+
+    /**
+     * Constants for tenders entity
+     */
+    public static final String TITLE = "title";
+    public static final String TENDER_DESCRIPTION = "tender_description";
+    public static final String BUDGET = "budget";
+    public static final String DATE_OF_START = "date_of_start";
+    public static final String DATE_OF_END = "date_of_end";
+    public static final String USER_COMPANY = "user_company";
 }
 

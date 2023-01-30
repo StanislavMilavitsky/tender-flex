@@ -44,7 +44,7 @@ public class UserRepositoryImpl implements UserRepository {
             " username," +
             " password," +
             " date_of_registration," +
-            " role, is_deleted" +
+            " role, company, is_deleted" +
             " FROM users us" +
             " WHERE us.id = ?;";
 
@@ -61,12 +61,12 @@ public class UserRepositoryImpl implements UserRepository {
             " username," +
             " password," +
             " date_of_registration," +
-            " role, is_deleted FROM users us LIMIT ? OFFSET ?";
+            " role, company, is_deleted FROM users us LIMIT ? OFFSET ?";
 
     private static final String COUNT_OF_ALL_USERS = "SELECT count(*) FROM users WHERE is_deleted = false;";//todo
 
     private static final String FIND_USER_BY_USERNAME_SQL = "SELECT us.id, username," +
-            " password, date_of_registration, role, is_deleted " +
+            " password, date_of_registration, role,company ,is_deleted " +
             "FROM users us WHERE us.username = ?;";
 
     @Override
@@ -79,6 +79,7 @@ public class UserRepositoryImpl implements UserRepository {
             parameters.put(PASSWORD, user.getPassword());
             parameters.put(DATE_OF_REGISTRATION, user.getDateOfRegistration() );
             parameters.put(ROLE, user.getRole().toString());
+            parameters.put(COMPANY, user.getCompany().toString());
             parameters.put(IS_DELETED, user.getIsDeleted());
             Number id = jdbcInsert.executeAndReturnKey(parameters);
             user.setId(id.longValue());

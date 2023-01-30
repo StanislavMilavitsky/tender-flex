@@ -22,7 +22,7 @@ public class User implements Serializable {
 
     @Email
     @NotEmpty(message = "Username should not be empty")
-    @Size(min = 2, max = 30, message = "Username should be between 2 and 50 characters")
+    @Size(min = 2, max = 30, message = "Username should be between 2 and 30 characters")
     private String userName;
 
     @NotBlank(groups = CreateAction.class)
@@ -32,6 +32,10 @@ public class User implements Serializable {
     private LocalDate dateOfRegistration;
 
     private Role role;
+
+    @NotEmpty(message = "Username should not be empty")
+    @Size(min = 2, max = 30, message = "Username should be between 2 and 30 characters")
+    private String company;
 
     private Boolean isDeleted;
 }
