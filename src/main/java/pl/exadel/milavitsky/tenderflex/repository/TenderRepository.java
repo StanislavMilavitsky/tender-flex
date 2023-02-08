@@ -45,15 +45,19 @@ public interface TenderRepository extends BaseRepository <Tender> {
 
     /**
      * Get count of Tenders at database not deleted
+     *
+     * @param contractorCompany
      * @return count
      */
-    long countOfTendersNotDeleted();
+    long countOfTendersContractor(String contractorCompany);
 
     /**
      * Find all Tenders not deleted
+     *
+     * @param contractorCompany
      * @param offset offset
      * @param limit limit
      * @return list of Tenders
      */
-    List<Tender> findAllNotDeleted(int offset, int limit);
+    List<Tender> findAllTendersContractor(int offset, int limit, String contractorCompany);
 }

@@ -38,7 +38,9 @@ public class Tender implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.s")
     private LocalDate dateOfEnd;
 
-    private String userCompany;
+    @NotEmpty(message = "Name of company should not be empty")
+    @Size(min = 2, max = 20, message = "Name of company should be between 2 and 30 characters")
+    private String contractorCompany;
 
     private Boolean isDeleted;
 

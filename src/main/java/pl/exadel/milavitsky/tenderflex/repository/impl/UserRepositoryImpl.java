@@ -63,7 +63,7 @@ public class UserRepositoryImpl implements UserRepository {
             " date_of_registration," +
             " role, company, is_deleted FROM users us LIMIT ? OFFSET ?";
 
-    private static final String COUNT_OF_ALL_USERS = "SELECT count(*) FROM users WHERE is_deleted = false;";//todo
+    private static final String COUNT_OF_ALL_USERS_SQL = "SELECT count(*) FROM users WHERE is_deleted = false;";//todo
 
     private static final String FIND_USER_BY_USERNAME_SQL = "SELECT us.id, username," +
             " password, date_of_registration, role,company ,is_deleted " +
@@ -134,7 +134,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public long countOfEntity() {
-        return jdbcTemplate.queryForObject(COUNT_OF_ALL_USERS, Long.class);
+        return jdbcTemplate.queryForObject(COUNT_OF_ALL_USERS_SQL, Long.class);
     }
 
     @Override

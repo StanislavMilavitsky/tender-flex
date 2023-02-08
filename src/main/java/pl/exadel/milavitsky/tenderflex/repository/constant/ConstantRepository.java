@@ -19,13 +19,23 @@ public class ConstantRepository {
     public static final String COMPANY = "company";
 
     /**
-     * Constants for tenders entity
+     * Constants for tender entity
      */
     public static final String TITLE = "title";
     public static final String TENDER_DESCRIPTION = "tender_description";
     public static final String BUDGET = "budget";
     public static final String DATE_OF_START = "date_of_start";
     public static final String DATE_OF_END = "date_of_end";
-    public static final String USER_COMPANY = "user_company";
+    public static final String CONTRACTOR_COMPANY = "user_company";
+
+
+    /**
+     * Constants for offer entity
+     */
+    public static final String ID_TENDER = "id_tender";
+    public static final String COMPANY_BIDDER = "company_bidder";
+    public static final String OFFER = "offer" ;
+    public static final String OFFER_DESCRIPTION = "offer_description";
+    public static final String ANSWER = "answer" ;
 }
 

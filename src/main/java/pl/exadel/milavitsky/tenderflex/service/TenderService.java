@@ -65,17 +65,21 @@ public interface TenderService extends BaseService<TenderDTO> {
     long count() throws ServiceException;
 
     /**
-     * Use method findAll in repository layer and remove all deleted tenders
+     * Use method findAllTenderContractor
      *
-     * @return list of all entity
+     * @param contractorCompany
+     * @return list of all tenders of contractor
      */
-    List<TenderDTO> findAllByUser(int page, int size) throws ServiceException, IncorrectArgumentException;
+    List<TenderDTO> findAllByContractor(int page, int size, String contractorCompany) throws ServiceException, IncorrectArgumentException;
 
     /**
      * Count of all tenders not deleted
      *
+     * @param contractorCompany of contractor
      * @return count
      * @throws ServiceException if count dont sum
      */
-    long countNotDeleted() throws ServiceException;
+    long countTendersContractor(String contractorCompany) throws ServiceException;
+
+
 }

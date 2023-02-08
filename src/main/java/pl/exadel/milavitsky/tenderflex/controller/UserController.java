@@ -6,7 +6,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -40,7 +39,7 @@ public class UserController extends PageController<User> {
      * @return entity user
      * @throws ServiceException    if cant find user
      * @throws ControllerException if negative id
-     */
+     *//*
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<User> findById(@PathVariable(name = "id") Long id) throws ControllerException, ServiceException {
@@ -52,7 +51,7 @@ public class UserController extends PageController<User> {
             throw new ControllerException("Negative id exception");
         }
     }
-
+*/
     /**
      * Create user
      *
@@ -101,7 +100,7 @@ public class UserController extends PageController<User> {
      * @throws ServiceException    the service exception
      * @throws ControllerException if id is incorrect
      */
-    @DeleteMapping("/{id}")
+  /*  @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> delete(@PathVariable(name = "id") Long id) throws ServiceException, ControllerException {
         if (id > 0) {
@@ -110,7 +109,7 @@ public class UserController extends PageController<User> {
         } else {
             throw new ControllerException("Negative id exception");
         }
-    }
+    }*/
 
     /**
      * Find all users use method from service layer
@@ -123,7 +122,6 @@ public class UserController extends PageController<User> {
      */
     @Override
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PagedModel<User>> findAll(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size

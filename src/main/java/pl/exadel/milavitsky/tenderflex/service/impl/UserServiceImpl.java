@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -89,6 +90,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     // @PostFilter("filterObject.role.name().equals('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
@@ -102,6 +104,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public long count() throws ServiceException {
         try {
             return userRepository.countOfEntity();

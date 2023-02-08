@@ -3,6 +3,8 @@ package pl.exadel.milavitsky.tenderflex.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
@@ -29,6 +31,7 @@ public class TenderServiceImpl implements TenderService {
     private final Mapper<TenderDTO, Tender> mapper;
 
     @Override
+    @PreAuthorize("hasAuthority('CONTRACTOR') and  hasAuthority('BIDDER')")
     public TenderDTO findById(Long id) throws ServiceException {
         try {
             TenderDTO TenderDTO = mapper.toDTO(tenderRepository.findById(id));
@@ -41,6 +44,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CONTRACTOR')")
     public TenderDTO create(TenderDTO tenderDTO) throws ServiceException {
         try {
             Tender tender = mapper.fromDTO(tenderDTO);
@@ -66,6 +70,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteById(Long id) throws ServiceException {
         try {
             tenderRepository.delete(id);
@@ -77,6 +82,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
+    @PostAuthorize("hasAuthority('BIDDER')")
     public List<TenderDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
@@ -152,23 +158,24 @@ public class TenderServiceImpl implements TenderService {
 
 
     @Override
-    public List<TenderDTO> findAllByUser(int page, int size) throws ServiceException, IncorrectArgumentException {
+    @PreAuthorize("hasAuthority('CONTRACTOR')")
+    public List<TenderDTO> findAllByContractor(int page, int size, String contractorCompany) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = countNotDeleted();
+            long count = countTendersContractor(contractorCompany);
             Page userPage = new Page(page, size, count);
-            List<Tender> tags = tenderRepository.findAllNotDeleted(userPage.getOffset(), userPage.getLimit());
+            List<Tender> tags = tenderRepository.findAllTendersContractor(userPage.getOffset(), userPage.getLimit(), contractorCompany);
             return tags.stream().map(mapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException exception) {
-            String exceptionMessage = "Find all users service exception!";
+            String exceptionMessage = "Find all tenders contractor service exception!";
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
     }
 
     @Override
-    public long countNotDeleted() throws ServiceException {
+    public long countTendersContractor(String contractorCompany) throws ServiceException {
         try {
-            return tenderRepository.countOfTendersNotDeleted();
+            return tenderRepository.countOfTendersContractor(contractorCompany);
         } catch (DataAccessException exception) {
             String exceptionMessage = "Count tenders service exception!";
             log.error(exceptionMessage, exception);

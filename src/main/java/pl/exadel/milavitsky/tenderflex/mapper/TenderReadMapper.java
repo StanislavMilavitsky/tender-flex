@@ -17,7 +17,7 @@ public class TenderReadMapper implements Mapper<TenderDTO, Tender> {
                 tender.getBudget(),
                 tender.getDateOfStart().toString(),
                 tender.getDateOfEnd().toString(),
-                tender.getUserCompany(),
+                tender.getContractorCompany(),
                 tender.getIsDeleted()
         );
     }
