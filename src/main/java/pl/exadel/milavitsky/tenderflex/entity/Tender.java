@@ -23,14 +23,22 @@ public class Tender implements Serializable {
     private Long id;
 
     @NotEmpty(message = "Title should not be empty")
-    @Size(min = 2, max = 20, message = "Title should be between 2 and 30 characters")
-    private String title;
+    @Size(min = 2, max = 20, message = "Title should be between 2 and 50 characters")
+    private String officialName;
 
-    @Size(min = 2, max = 100, message = "Title should be between 2 and 100 characters")
+    @Size(min = 2, max = 100, message = "Registration number should be between 2 and 20 characters")
+    private String nationalRegistrationNumber;
+
+    @Size(min = 2, max = 50, message = "City should be between 2 and 50 characters")
+    private String city;
+
+    @Size(min = 2, max = 100, message = "Tender description should be between 2 and 100 characters")
     private String tenderDescription;
 
     @Positive(message = "Budget should be positive")
     private BigDecimal budget;
+
+
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.s")
     private LocalDate dateOfStart;

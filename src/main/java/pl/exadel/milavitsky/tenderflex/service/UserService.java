@@ -6,7 +6,11 @@ import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 
 import java.util.List;
 
-public interface UserService extends BaseService<User> {
+public interface UserService {
+
+    User findById(Long id) throws ServiceException;
+
+    User create(User user) throws ServiceException;
 
     List<User> findAll(int page, int size) throws ServiceException, IncorrectArgumentException;
 

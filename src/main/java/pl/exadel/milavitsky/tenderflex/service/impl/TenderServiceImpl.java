@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
@@ -163,8 +164,8 @@ public class TenderServiceImpl implements TenderService {
         try {
             long count = countTendersContractor(contractorCompany);
             Page userPage = new Page(page, size, count);
-            List<Tender> tags = tenderRepository.findAllTendersContractor(userPage.getOffset(), userPage.getLimit(), contractorCompany);
-            return tags.stream().map(mapper::toDTO).collect(Collectors.toList());
+            List<Tender> tenders = tenderRepository.findAllTendersContractor(userPage.getOffset(), userPage.getLimit(), contractorCompany);
+            return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException exception) {
             String exceptionMessage = "Find all tenders contractor service exception!";
             log.error(exceptionMessage, exception);

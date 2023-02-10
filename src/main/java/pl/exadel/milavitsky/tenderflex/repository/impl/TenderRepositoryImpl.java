@@ -61,7 +61,7 @@ public class TenderRepositoryImpl implements TenderRepository {
     private static final String SORT_BY_TITLE_SQL = "SELECT id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company" +
             " FROM tenders ORDER BY title ";
 
-    private static final String SORT_BY_DATE_SQL_START = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
+    private static final String SORT_BY_DATE_SQL_START_SQL = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
             "FROM tenders tn ORDER BY tn.date_of_start ";
 
     private static final String SORT_BY_DATE_SQL_END = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
@@ -172,7 +172,7 @@ public class TenderRepositoryImpl implements TenderRepository {
     @Override
     public List<Tender> sortByDateOfStart(SortType sortType) throws RepositoryException {
         try {
-            StringBuilder builder = new StringBuilder(SORT_BY_DATE_SQL_START);
+            StringBuilder builder = new StringBuilder(SORT_BY_DATE_SQL_START_SQL);
             if (sortType == SortType.DESC) {
                 builder.append(SortType.DESC.name());
             }

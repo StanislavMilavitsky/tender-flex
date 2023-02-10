@@ -4,18 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.exadel.milavitsky.tenderflex.entity.User;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.service.UserService;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
-import pl.exadel.milavitsky.tenderflex.validation.CreateAction;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -72,44 +68,6 @@ public class UserController extends PageController<User> {
             return ResponseEntity.ok(result);
         }
     }
-
-    /**
-     * Update user. Mark the fields that are not specified for updating null.
-     *
-     * @param user the entity user
-     * @return the response entity
-     * @throws ServiceException    the service exception
-     * @throws ControllerException if entity fields not valid
-     */
-    @PutMapping()
-    public ResponseEntity<User> update(@RequestBody @Valid @Validated({CreateAction.class}) User user, BindingResult bindingResult) throws ServiceException, ControllerException {
-        if (bindingResult.hasErrors()) {
-            log.error(bindingResultHandler(bindingResult));
-            throw new ControllerException(bindingResultHandler(bindingResult));
-        } else {
-            User result = userService.update(user);
-            return ResponseEntity.ok(result);
-        }
-    }
-
-    /**
-     * Delete user by id.
-     *
-     * @param id the id
-     * @return the response entity
-     * @throws ServiceException    the service exception
-     * @throws ControllerException if id is incorrect
-     */
-  /*  @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> delete(@PathVariable(name = "id") Long id) throws ServiceException, ControllerException {
-        if (id > 0) {
-            userService.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else {
-            throw new ControllerException("Negative id exception");
-        }
-    }*/
 
     /**
      * Find all users use method from service layer

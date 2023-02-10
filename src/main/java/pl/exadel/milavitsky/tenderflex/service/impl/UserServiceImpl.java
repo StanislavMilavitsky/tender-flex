@@ -66,27 +66,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    public User update(User user) throws ServiceException {
-        try {
-            return userRepository.update(user);
-        } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Update user by  username=%s exception!", user.getUserName());
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public void deleteById(Long id) throws ServiceException {
-        try {
-            userRepository.delete(id);
-        } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Delete user by id=%d exception!", id);
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
 
     @Override
     // @PostFilter("filterObject.role.name().equals('ADMIN')")

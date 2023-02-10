@@ -48,15 +48,6 @@ public class UserRepositoryImpl implements UserRepository {
             " FROM users us" +
             " WHERE us.id = ?;";
 
-    private static final String UPDATE_USER_BY_ID_SQL = "UPDATE users" +
-            " SET username = ?," +
-            " password = ?" +
-            "WHERE id = ?;";
-
-    public static final String DELETE_USER_BY_ID_SQL = "UPDATE users " +
-            " SET is_deleted = true" +
-            " WHERE id = ?;";
-
     public static final String FIND_ALL_USERS_SQL = "SELECT us.id," +
             " username," +
             " password," +
@@ -97,30 +88,6 @@ public class UserRepositoryImpl implements UserRepository {
             return jdbcTemplate.queryForObject(FIND_USER_BY_ID_SQL, new BeanPropertyRowMapper<>(User.class), id);
         } catch (DataAccessException exception){
             String exceptionMessage = String.format("Read user by id=%d exception sql!", id);
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public User update(User user) throws RepositoryException {
-        try {
-            int rows = jdbcTemplate.update(UPDATE_USER_BY_ID_SQL, user.getUserName(), user.getPassword(),
-                    user.getId());
-            return rows > 0L ? findById(user.getId()) : null;
-        } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Update user by id=%d exception sql!", user.getId());
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public void delete(Long id) throws RepositoryException {
-        try{
-            jdbcTemplate.update(DELETE_USER_BY_ID_SQL, id);
-        } catch (DataAccessException exception){
-            String exceptionMessage = String.format("Delete user by id=%d exception sql!", id);
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
