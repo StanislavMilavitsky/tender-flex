@@ -26,7 +26,7 @@ create table cpv_codes
 (
     cpv_code bigserial
         constraint cpv_code_pk primary key,
-    cpv_description varchar (20),
+    cpv_description varchar (20)
 
 );
 
@@ -35,7 +35,7 @@ create table tenders
 (
     id bigserial not null
         constraint tender_pk primary key,
-   id_company constraint id_company
+   id_company bigserial constraint id_company
         references company,
     id_contact_person bigserial
     constraint id_contact_person
@@ -60,7 +60,7 @@ create table offers
 (
  id bigserial not null
         constraint offer_pk primary key,
-    id_company constraint id_company
+    id_company bigserial constraint id_company
         references company,
      id_contact_person bigserial
     constraint id_contact_person
