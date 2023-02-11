@@ -22,6 +22,20 @@ public class Tender implements Serializable {
     @Positive(message = "Should be positive")
     private Long id;
 
+    @Positive(message = "Should be positive")
+    private Long idCompany;
+
+    @Positive(message = "Should be positive")
+    private Long idContactPerson;
+
+    @Positive(message = "Should be positive")
+    private Long cpvCode;
+
+    @Size(min = 2, max = 30, message = "Registration number should be between 2 and 30 characters")
+    private Long cpvDescription;
+
+    private TypeOfTender typeOfTender;
+
     @NotEmpty(message = "Title should not be empty")
     @Size(min = 2, max = 20, message = "Title should be between 2 and 50 characters")
     private String officialName;

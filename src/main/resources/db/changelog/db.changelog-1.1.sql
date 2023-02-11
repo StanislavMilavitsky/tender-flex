@@ -8,8 +8,8 @@ create table users
   username varchar (50) DEFAULT 'test',
   password varchar (128) DEFAULT '{noop}123',
   date_of_registration date,
-  company varchar (30) not null unique,
   role varchar(15),
+  last_login_date date,
   is_deleted boolean
   );
 
