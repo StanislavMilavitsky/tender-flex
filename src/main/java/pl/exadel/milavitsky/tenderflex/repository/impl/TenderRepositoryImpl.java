@@ -76,21 +76,33 @@ public class TenderRepositoryImpl implements TenderRepository {
     @Override
     public Tender create(Tender tender) throws RepositoryException {
         try {
-            /*tender.setIsDeleted(false);
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put(TITLE, tender.getTitle());
-            parameters.put(TENDER_DESCRIPTION, tender.getTenderDescription());
-            parameters.put(BUDGET, tender.getBudget());
-            parameters.put(DATE_OF_START, tender.getDateOfStart());
-            parameters.put(DATE_OF_END, tender.getDateOfEnd());
-            parameters.put(IS_DELETED, tender.getIsDeleted());
-            parameters.put(CONTRACTOR_COMPANY, tender.getContractorCompany());
+            parameters.put(OFFICIAL_NAME, tender.getOfficialName());
+            parameters.put(NATIONAL_REGISTRATION_NUMBER, tender.getNationalRegistrationNumber());
+            parameters.put(COUNTRY, tender.getCountry().name());
+            parameters.put(CITY, tender.getCity());
+            parameters.put(NAME, tender.getName());
+            parameters.put(SURNAME, tender.getSurname());
+            parameters.put(PHONE_NUMBER, tender.getPhoneNumber());
+            parameters.put(ID_CPV_CODE, tender.getCpvCode().getCpvCode());
+            parameters.put(TYPE_OF_TENDER, tender.getTypeOfTender().name());
+            parameters.put(DESCRIPTION_OF_THE_PROCUREMENT, tender.getDescriptionOfTheProcurement());
+            parameters.put(MINIMUM_TENDER_VALUE, tender.getMinimumTenderValue());
+            parameters.put(MAXIMUM_TENDER_VALUE, tender.getMaximumTenderValue());
+            parameters.put(CURRENCY, tender.getCurrency().name());
+            parameters.put(PUBLICATION_DATE, tender.getPublicationDate());
+            parameters.put(DEADLINE_FOR_OFFER_SUBMISSION, tender.getDeadlineForOfferSubmission());
+            parameters.put(DEADLINE_FOR_SIGNING_CONTRACT_SUBMISSION, tender.getDeadlineForSigningContractSubmission());
+            parameters.put(CONTRACT, tender.getContract());
+            parameters.put(AWARD_DECISION, tender.getAwardDecision());
+            parameters.put(REJECT_DECISION, tender.getRejectDecision());
+            parameters.put(STATUS, tender.getStatusTender().name());
 
             Number id = jdbcInsert.executeAndReturnKey(parameters);
-            tender.setId(id.longValue());*/
+            tender.setId(id.longValue());
             return tender;
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Create tender by title name=%s exception sql!", tender.getAwardDecision());
+            String exceptionMessage = String.format("Create tender by company name=%s exception sql!", tender.getOfficialName());
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }

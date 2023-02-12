@@ -64,14 +64,11 @@ public class UserRepositoryImpl implements UserRepository {
     public User create(User user) throws RepositoryException {
         try{
             user.setDateOfRegistration(LocalDate.now());
-            user.setIsDeleted(false);
             Map<String, Object> parameters = new HashMap<>();
             parameters.put(USERNAME, user.getUserName());
             parameters.put(PASSWORD, user.getPassword());
             parameters.put(DATE_OF_REGISTRATION, user.getDateOfRegistration() );
             parameters.put(ROLE, user.getRole().toString());
-            parameters.put(COMPANY, user.getCompany().toString());
-            parameters.put(IS_DELETED, user.getIsDeleted());
             Number id = jdbcInsert.executeAndReturnKey(parameters);
             user.setId(id.longValue());
             return user;

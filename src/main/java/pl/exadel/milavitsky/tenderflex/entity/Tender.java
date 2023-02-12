@@ -9,7 +9,6 @@ import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
 import pl.exadel.milavitsky.tenderflex.entity.enums.StatusTender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.TypeOfTender;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -24,9 +23,7 @@ public class Tender extends Company implements Serializable {
     @Positive(message = "Should be positive")
     protected Long id;
 
-    @Size(min = 2, max = 20, message = "CPV code should be between 2 and 20 characters")
-    @NotEmpty(message = "Phone number should not be empty")
-    private String cpvCode;
+    private CPVCode cpvCode;
 
     @Size(min = 2, max = 30, message = "CPV description should be between 2 and 30 characters")
     private Long cpvDescription;
@@ -60,7 +57,5 @@ public class Tender extends Company implements Serializable {
     private String rejectDecision;
 
     private StatusTender statusTender ;
-
-
 
 }

@@ -5,40 +5,62 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import pl.exadel.milavitsky.tenderflex.entity.Company;
+import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusTender;
+import pl.exadel.milavitsky.tenderflex.entity.enums.TypeOfTender;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
-public class TenderDTO implements Serializable {
+public class TenderDTO extends Company implements Serializable {
 
     @Positive(message = "Should be positive")
-    private Long id;
+    protected Long id;
 
-    @NotEmpty(message = "Title should not be empty")
-    @Size(min = 2, max = 20, message = "Title should be between 2 and 30 characters")
-    private String title;
+    @Size(min = 2, max = 20, message = "CPV code should be between 2 and 20 characters")
+    @NotEmpty(message = "Phone number should not be empty")
+    private String cpvCode;
 
-    @Size(min = 2, max = 100, message = "Title should be between 2 and 100 characters")
-    private String tenderDescription;
+    @Size(min = 2, max = 30, message = "CPV description should be between 2 and 30 characters")
+    private Long cpvDescription;
 
-    @Positive(message = "Budget should be positive")
-    private BigDecimal budget;
+    private TypeOfTender typeOfTender;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.s")
-    private String dateOfStart;
+    @Size(min = 2, max = 250, message = "Description of the procurement should be between 2 and 250 characters")
+    private String descriptionOfTheProcurement;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.s")
-    private String dateOfEnd;
+    @Positive(message = "Should be positive")
+    private String minimumTenderValue;
 
-    private String userCompany;
+    @Positive(message = "Should be positive")
+    private String maximumTenderValue;
 
-    private Boolean isDeleted;
+    private Currency currency;
+
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private LocalDate publicationDate;
+
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private LocalDate deadlineForOfferSubmission;
+
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private LocalDate deadlineForSigningContractSubmission;
+
+    private String contract;
+
+    private String awardDecision;
+
+    private String rejectDecision;
+
+    private StatusTender statusTender ;
+
 
 }
