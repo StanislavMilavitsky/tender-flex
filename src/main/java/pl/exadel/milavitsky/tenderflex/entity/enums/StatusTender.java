@@ -1,4 +1,4 @@
-package pl.exadel.milavitsky.tenderflex.entity;
+package pl.exadel.milavitsky.tenderflex.entity.enums;
 
 public enum StatusTender {
     CLOSED,

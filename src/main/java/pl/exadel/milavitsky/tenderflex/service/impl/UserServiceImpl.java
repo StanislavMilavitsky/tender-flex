@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import pl.exadel.milavitsky.tenderflex.entity.Role;
+import pl.exadel.milavitsky.tenderflex.entity.enums.Role;
 import pl.exadel.milavitsky.tenderflex.entity.User;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;

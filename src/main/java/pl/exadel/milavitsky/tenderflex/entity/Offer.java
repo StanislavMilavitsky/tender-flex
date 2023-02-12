@@ -4,32 +4,33 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
-public class Offer {
+public class Offer extends Company implements Serializable {
 
     @Positive(message = "Should be positive")
-    Long id;
+    protected Long id;
 
     @Positive(message = "Should be positive")
-    Long idTender;
-
-    @NotEmpty(message = "Name of company should not be empty")
-    @Size(min = 2, max = 20, message = "Name of company should be between 2 and 30 characters")
-    String companyBidder;
+    private Long idTender;
 
     @Positive(message = "Budget should be positive")
-    Double offer;
+    private Long bidPrice;
 
-    @Size(min = 2, max = 100, message = "Title should be between 2 and 100 characters")
-    String offerDescription;
+    private Currency currency;
 
-    Boolean answer;
+    private String document;
+
+    private StatusOffer statusOffer;
+
+    private LocalDate localDate;
 }

@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusTender;
+import pl.exadel.milavitsky.tenderflex.entity.enums.TypeOfTender;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
@@ -16,28 +19,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @Builder
-public class Tender implements Serializable {
+public class Tender extends Company implements Serializable {
 
     @Positive(message = "Should be positive")
-    private Long id;
+    protected Long id;
 
-    @Positive(message = "Should be positive")
-    private Long idCompany;
-
-    @Positive(message = "Should be positive")
-    private Long idContactPerson;
-
-    @Positive(message = "Should be positive")
-    private Long cpvCode;
+    @Size(min = 2, max = 20, message = "CPV code should be between 2 and 20 characters")
+    @NotEmpty(message = "Phone number should not be empty")
+    private String cpvCode;
 
     @Size(min = 2, max = 30, message = "CPV description should be between 2 and 30 characters")
     private Long cpvDescription;
 
     private TypeOfTender typeOfTender;
-
-    @NotEmpty(message = "Title should not be empty")
-    @Size(min = 2, max = 20, message = "Title should be between 2 and 50 characters")
-    private String officialName;
 
     @Size(min = 2, max = 250, message = "Description of the procurement should be between 2 and 250 characters")
     private String descriptionOfTheProcurement;
@@ -47,9 +41,6 @@ public class Tender implements Serializable {
 
     @Positive(message = "Should be positive")
     private String maximumTenderValue;
-
-    @Size(min = 2, max = 100, message = "Tender description should be between 2 and 100 characters")
-    private String tenderDescription;
 
     private Currency currency;
 

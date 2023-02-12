@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class TenderReadMapper implements Mapper<TenderDTO, Tender> {
     @Override
     public TenderDTO toDTO(Tender tender) {
-        return new TenderDTO(
+        return null; /*new TenderDTO(
                 tender.getId(),
                 tender.getTitle(),
                 tender.getTenderDescription(),
@@ -19,12 +19,12 @@ public class TenderReadMapper implements Mapper<TenderDTO, Tender> {
                 tender.getDateOfEnd().toString(),
                 tender.getContractorCompany(),
                 tender.getIsDeleted()
-        );
+        );*/
     }
 
     @Override
     public Tender fromDTO(TenderDTO tenderDTO) {
-        return new Tender(
+        return null; /*new Tender(
                 tenderDTO.getId(),
                 tenderDTO.getTitle(),
                 tenderDTO.getTenderDescription(),
@@ -33,6 +33,6 @@ public class TenderReadMapper implements Mapper<TenderDTO, Tender> {
                 LocalDate.parse(tenderDTO.getDateOfEnd()),
                 tenderDTO.getUserCompany(),
                 tenderDTO.getIsDeleted()
-        );
+        );*/
     }
 }

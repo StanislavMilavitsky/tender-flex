@@ -76,7 +76,7 @@ public class TenderRepositoryImpl implements TenderRepository {
     @Override
     public Tender create(Tender tender) throws RepositoryException {
         try {
-            tender.setIsDeleted(false);
+            /*tender.setIsDeleted(false);
             Map<String, Object> parameters = new HashMap<>();
             parameters.put(TITLE, tender.getTitle());
             parameters.put(TENDER_DESCRIPTION, tender.getTenderDescription());
@@ -87,10 +87,10 @@ public class TenderRepositoryImpl implements TenderRepository {
             parameters.put(CONTRACTOR_COMPANY, tender.getContractorCompany());
 
             Number id = jdbcInsert.executeAndReturnKey(parameters);
-            tender.setId(id.longValue());
+            tender.setId(id.longValue());*/
             return tender;
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Create tender by title name=%s exception sql!", tender.getTitle());
+            String exceptionMessage = String.format("Create tender by title name=%s exception sql!", tender.getAwardDecision());
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
@@ -110,10 +110,10 @@ public class TenderRepositoryImpl implements TenderRepository {
     @Override
     public Tender update(Tender tender) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_TENDER_BY_ID_SQL, tender.getTitle(),
+           /* int rows = jdbcTemplate.update(UPDATE_TENDER_BY_ID_SQL, tender.getTitle(),
                     tender.getTenderDescription(), tender.getBudget(),
-                    tender.getDateOfStart(), tender.getDateOfEnd(), tender.getId());
-            return rows > 0L ? findById(tender.getId()) : null;
+                    tender.getDateOfStart(), tender.getDateOfEnd(), tender.getId());*/
+            return null;// rows > 0L ? findById(tender.getId()) : null;
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Update tender by id=%d exception sql!", tender.getId());
             log.error(exceptionMessage, exception);

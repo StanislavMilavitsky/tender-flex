@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import pl.exadel.milavitsky.tenderflex.entity.enums.Role;
 import pl.exadel.milavitsky.tenderflex.validation.CreateAction;
 
 import javax.validation.constraints.*;
@@ -28,14 +29,11 @@ public class User implements Serializable {
     @NotBlank(groups = CreateAction.class)
     private String password;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate dateOfRegistration;
 
     private Role role;
 
-    @NotEmpty(message = "Username should not be empty")
-    @Size(min = 2, max = 30, message = "Username should be between 2 and 30 characters")
-    private String company;
-
-    private Boolean isDeleted;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private LocalDate lastLoginDate;
 }
