@@ -3,9 +3,8 @@
 --changeset milavitsky:1
 create table cpv_codes
 (
-    id bigserial
+    cpv_code varchar (10)
      constraint cpv_code_pk primary key,
-    cpv_code varchar (10),
     cpv_description varchar (20)
 
 );
@@ -22,7 +21,7 @@ create table tenders
     name varchar (50) not null,
     surname varchar (50) not null,
     phone_number varchar (20),
-    id_cpv_code bigserial,
+    id_cpv_code varchar (10),
     type_of_tender varchar (20),
     description_of_the_procurement varchar (250),
     minimum_tender_value bigserial,

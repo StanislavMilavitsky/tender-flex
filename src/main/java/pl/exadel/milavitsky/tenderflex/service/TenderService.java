@@ -1,5 +1,6 @@
 package pl.exadel.milavitsky.tenderflex.service;
 
+import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
@@ -82,4 +83,5 @@ public interface TenderService extends BaseService<TenderDTO> {
     long countTendersContractor(String contractorCompany) throws ServiceException;
 
 
+    CreateTenderDTO collectTenderConstant();
 }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import pl.exadel.milavitsky.tenderflex.entity.CPVCode;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.repository.TenderRepository;
@@ -31,13 +32,13 @@ public class TenderRepositoryImpl implements TenderRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private SimpleJdbcInsert jdbcInsert;
-
     @PostConstruct
     private void postConstruct() {
         jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("tenders")
                 .usingGeneratedKeyColumns(ID);
     }
+
 
     public static final String FIND_TENDER_BY_ID_SQL = "SELECT tn.id, tn.title, tn.tender_description, tn.budget, tn.date_of_start, tn.is_deleted, tn.date_of_end, tn.user_company" +
             "  FROM tenders tn WHERE tn.id = ?;";
@@ -72,6 +73,8 @@ public class TenderRepositoryImpl implements TenderRepository {
     private static final String COUNT_OF_ALL_TENDERS_CONTRACTOR = "SELECT count(*) FROM tenders WHERE contractor_company = ? AND is_deleted = FALSE;";
 
     private static final String FIND_ALL_TENDERS_CONTRACTOR = "SELECT tn.id, tn.title, ptnTender_description, tn.budget, tn.date_of_start, tn.date_of_end, tn.is_deleted, tn.user_company FROM tenders tn WHERE tn.is_deleted = false AND contractor_company = ? LIMIT ? OFFSET ?;";
+
+    private static final String FIND_ALL_CPV_CODES_SQL = "SELECT cpv_code, cpv_description FROM cpv_codes; ";
 
     @Override
     public Tender create(Tender tender) throws RepositoryException {
@@ -224,6 +227,12 @@ public class TenderRepositoryImpl implements TenderRepository {
     @Override
     public List<Tender> findAllTendersContractor(int offset, int limit, String contractorCompany) {
         return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR, new BeanPropertyRowMapper<>(Tender.class), limit, offset, contractorCompany);
+    }
+
+    @Override
+    public List<CPVCode> findAllCPVCodes() {
+        return jdbcTemplate.query(FIND_ALL_CPV_CODES_SQL, new BeanPropertyRowMapper<>(CPVCode.class));
+
     }
 
 }

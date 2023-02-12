@@ -1,5 +1,6 @@
 package pl.exadel.milavitsky.tenderflex.repository;
 
+import pl.exadel.milavitsky.tenderflex.entity.CPVCode;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
@@ -60,4 +61,7 @@ public interface TenderRepository extends BaseRepository <Tender> {
      * @return list of Tenders
      */
     List<Tender> findAllTendersContractor(int offset, int limit, String contractorCompany);
+
+    List<CPVCode> findAllCPVCodes();
+
 }

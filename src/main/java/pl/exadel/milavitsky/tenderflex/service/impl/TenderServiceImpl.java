@@ -8,8 +8,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
+import pl.exadel.milavitsky.tenderflex.entity.CPVCode;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
+import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
+import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.TypeOfTender;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
@@ -19,6 +24,7 @@ import pl.exadel.milavitsky.tenderflex.service.Page;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
 import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +58,7 @@ public class TenderServiceImpl implements TenderService {
             tender = tenderRepository.create(tender);
             return mapper.toDTO(tender);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Add tender by title= %s exception!", tenderDTO.getTitle());
+            String exceptionMessage = String.format("Add tender by title= %s exception!", tenderDTO.getId());
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
@@ -64,7 +70,7 @@ public class TenderServiceImpl implements TenderService {
             Tender tender = tenderRepository.update(mapper.fromDTO(tenderDTO));
             return mapper.toDTO(tender);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Update tender by title= %s exception!", tenderDTO.getTitle());
+            String exceptionMessage = String.format("Update tender by title= %s exception!", tenderDTO.getId());
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
@@ -182,5 +188,15 @@ public class TenderServiceImpl implements TenderService {
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
+    }
+
+    @Override
+    public CreateTenderDTO collectTenderConstant() {
+        CreateTenderDTO createTenderDTO = new CreateTenderDTO();
+        createTenderDTO.setCountryList(Arrays.asList(Country.values()));
+        createTenderDTO.setTypeOfTenders(Arrays.asList(TypeOfTender.values()));
+        createTenderDTO.setCurrencies(Arrays.asList(Currency.values()));
+        createTenderDTO.setCpvCodes(tenderRepository.findAllCPVCodes());
+        return createTenderDTO;
     }
 }

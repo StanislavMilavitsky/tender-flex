@@ -62,14 +62,14 @@ public class OfferRepositoryImpl implements OfferRepository {
     @Override
     public Offer create(Offer offer) throws RepositoryException {
         try {
-            Map<String, Object> parameters = new HashMap<>();
+         /*   Map<String, Object> parameters = new HashMap<>();
             parameters.put(ID_TENDER, offer.getIdTender());
             parameters.put(COMPANY_BIDDER, offer.getCompanyBidder());
             parameters.put(OFFER, offer.getOffer());
             parameters.put(OFFER_DESCRIPTION, offer.getOfferDescription());
-
-            Number id = jdbcInsert.executeAndReturnKey(parameters);
-            offer.setId(id.longValue());
+*/
+           // Number id = jdbcInsert.executeAndReturnKey(parameters);
+           // offer.setId(id.longValue());
             return offer;
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Create offer by id=%d exception sql!", offer.getIdTender());

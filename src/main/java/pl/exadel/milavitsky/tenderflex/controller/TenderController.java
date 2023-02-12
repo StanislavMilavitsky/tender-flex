@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
@@ -48,8 +49,16 @@ public class TenderController extends PageController<TenderDTO> {
         }
     }
 
+    @GetMapping("/new")
+    public ResponseEntity<CreateTenderDTO> create()
+            throws ServiceException {
+            CreateTenderDTO result = tenderService.collectTenderConstant();
+            return  null;//ResponseEntity.ok(result);
+        }
+
+
     /**
-     * Add tender. Add tender+
+     * Add tender.
      *
      * @param tenderDTO the tender dto
      * @return the response entity
@@ -58,7 +67,7 @@ public class TenderController extends PageController<TenderDTO> {
      */
 
     @PostMapping()
-    public ResponseEntity<TenderDTO> create(@RequestBody @Valid TenderDTO tenderDTO, BindingResult bindingResult)
+    public ResponseEntity<TenderDTO> publish(@RequestBody @Valid TenderDTO tenderDTO, BindingResult bindingResult)
             throws ServiceException, ControllerException {
         if (bindingResult.hasErrors()) {
             log.error(bindingResultHandler(bindingResult));
