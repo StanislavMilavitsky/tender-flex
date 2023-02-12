@@ -7,6 +7,7 @@ public enum Role implements GrantedAuthority {
     CONTRACTOR,
     ADMIN;
 
+
     @Override
     public String getAuthority() {
         return name();

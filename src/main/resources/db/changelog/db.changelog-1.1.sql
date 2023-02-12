@@ -9,8 +9,7 @@ create table users
   password varchar (128) DEFAULT '{noop}123',
   date_of_registration date,
   role varchar(15),
-  last_login_date date,
-  is_deleted boolean
+  last_login_date date
   );
 
 --changeset milavitsky:2
