@@ -24,7 +24,7 @@ public class User implements Serializable {
     @Email
     @NotEmpty(message = "Username should not be empty")
     @Size(min = 2, max = 30, message = "Username should be between 2 and 30 characters")
-    private String userName;
+    private String username;
 
     @NotBlank(groups = CreateAction.class)
     private String password;

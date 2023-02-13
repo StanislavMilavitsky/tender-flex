@@ -18,11 +18,11 @@ import java.util.List;
 @Builder
 public class CreateTenderDTO implements Serializable {
 
-    List<Country> countryList;
+    private List<Country> countryList;
 
-    List<CPVCode> cpvCodes;
+    private List<CPVCode> cpvCodes;
 
-    List<TypeOfTender> typeOfTenders;
+    private List<TypeOfTender> typeOfTenders;
 
-    List<Currency> currencies;
+    private List<Currency> currencies;
 }

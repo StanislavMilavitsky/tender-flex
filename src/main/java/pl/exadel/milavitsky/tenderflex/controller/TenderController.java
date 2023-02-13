@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
+import pl.exadel.milavitsky.tenderflex.dto.PublishTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
@@ -50,30 +51,30 @@ public class TenderController extends PageController<TenderDTO> {
     }
 
     @GetMapping("/new")
-    public ResponseEntity<CreateTenderDTO> create()
+    public ResponseEntity<CreateTenderDTO> add()
             throws ServiceException {
             CreateTenderDTO result = tenderService.collectTenderConstant();
-            return  null;//ResponseEntity.ok(result);
+            return  ResponseEntity.ok(result);
         }
 
 
     /**
      * Add tender.
      *
-     * @param tenderDTO the tender dto
+     * @param publishTenderDTO the tender dto
      * @return the response entity
      * @throws ServiceException    the service exception
      * @throws ControllerException if entity fields not valid
      */
 
     @PostMapping()
-    public ResponseEntity<TenderDTO> publish(@RequestBody @Valid TenderDTO tenderDTO, BindingResult bindingResult)
+    public ResponseEntity<PublishTenderDTO> publish(@RequestBody @Valid PublishTenderDTO publishTenderDTO, BindingResult bindingResult)
             throws ServiceException, ControllerException {
         if (bindingResult.hasErrors()) {
             log.error(bindingResultHandler(bindingResult));
             throw new ControllerException(bindingResultHandler(bindingResult));
         } else {
-            TenderDTO result = tenderService.create(tenderDTO);
+            PublishTenderDTO result = tenderService.create(publishTenderDTO);
             return ResponseEntity.ok(result);
         }
     }

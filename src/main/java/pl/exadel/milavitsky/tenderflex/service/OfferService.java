@@ -11,7 +11,7 @@ import java.util.List;
  *  Service layer use methods from repository layer
  */
 
-public interface OfferService extends BaseService<Offer> {
+public interface OfferService {
 
     public List<Offer> findOfferByIdTender(int page, int size, Long id) throws ServiceException, IncorrectArgumentException;
 

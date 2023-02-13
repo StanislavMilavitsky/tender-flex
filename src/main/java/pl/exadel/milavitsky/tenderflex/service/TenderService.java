@@ -1,6 +1,8 @@
 package pl.exadel.milavitsky.tenderflex.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
+import pl.exadel.milavitsky.tenderflex.dto.PublishTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
@@ -12,7 +14,18 @@ import java.util.List;
  *  Service layer use methods from repository layer
  */
 
-public interface TenderService extends BaseService<TenderDTO> {
+public interface TenderService {
+
+    @PreAuthorize("hasAuthority('CONTRACTOR') and  hasAuthority('BIDDER')")
+    TenderDTO findById(Long id) throws ServiceException;
+
+    @PreAuthorize("hasAuthority('CONTRACTOR')")
+    PublishTenderDTO create(PublishTenderDTO publishTenderDTO) throws ServiceException;
+
+    TenderDTO update(TenderDTO tenderDTO) throws ServiceException;
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    void deleteById(Long id) throws ServiceException;
 
     /**
      * Use method findAll in repository layer
@@ -83,5 +96,5 @@ public interface TenderService extends BaseService<TenderDTO> {
     long countTendersContractor(String contractorCompany) throws ServiceException;
 
 
-    CreateTenderDTO collectTenderConstant();
+    CreateTenderDTO collectTenderConstant() throws ServiceException;
 }

@@ -24,7 +24,6 @@ public class ConstantRepository {
     /**
      * Constants for tender entity
      */
-    public static final String ID_CPV_CODE = "id_cpv_code";
     public static final String TYPE_OF_TENDER = "type_of_tender";
     public static final String DESCRIPTION_OF_THE_PROCUREMENT = "description_of_the_procurement";
     public static final String MINIMUM_TENDER_VALUE = "minimum_tender_value";

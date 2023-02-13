@@ -57,7 +57,7 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String COUNT_OF_ALL_USERS_SQL = "SELECT count(*) FROM users WHERE is_deleted = false;";//todo
 
     private static final String FIND_USER_BY_USERNAME_SQL = "SELECT us.id, username," +
-            " password, date_of_registration, role,company ,is_deleted " +
+            " password, date_of_registration, role, last_login_date " +
             "FROM users us WHERE us.username = ?;";
 
     @Override
@@ -65,7 +65,7 @@ public class UserRepositoryImpl implements UserRepository {
         try{
             user.setDateOfRegistration(LocalDate.now());
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put(USERNAME, user.getUserName());
+            parameters.put(USERNAME, user.getUsername());
             parameters.put(PASSWORD, user.getPassword());
             parameters.put(DATE_OF_REGISTRATION, user.getDateOfRegistration() );
             parameters.put(ROLE, user.getRole().toString());
@@ -73,7 +73,7 @@ public class UserRepositoryImpl implements UserRepository {
             user.setId(id.longValue());
             return user;
         } catch (DataAccessException exception){
-            String exceptionMessage = String.format("Create user by Last username=%s exception sql!", user.getUserName());
+            String exceptionMessage = String.format("Create user by Last username=%s exception sql!", user.getUsername());
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }

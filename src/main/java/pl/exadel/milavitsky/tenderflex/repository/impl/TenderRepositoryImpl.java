@@ -87,7 +87,7 @@ public class TenderRepositoryImpl implements TenderRepository {
             parameters.put(NAME, tender.getName());
             parameters.put(SURNAME, tender.getSurname());
             parameters.put(PHONE_NUMBER, tender.getPhoneNumber());
-            parameters.put(ID_CPV_CODE, tender.getCpvCode().getCpvCode());
+            parameters.put(CPV_CODE, tender.getCpvCode().getCpvCode());
             parameters.put(TYPE_OF_TENDER, tender.getTypeOfTender().name());
             parameters.put(DESCRIPTION_OF_THE_PROCUREMENT, tender.getDescriptionOfTheProcurement());
             parameters.put(MINIMUM_TENDER_VALUE, tender.getMinimumTenderValue());

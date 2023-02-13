@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
             return userRepository.create(user);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Add user by username=%s exception!", user.getUserName());
+            String exceptionMessage = String.format("Add user by username=%s exception!", user.getUsername());
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
                 .map(user -> new org.springframework.security.core.userdetails.User(
-                        user.getUserName(),
+                        user.getUsername(),
                         user.getPassword(),
                         Collections.singleton(user.getRole())
                 ))
