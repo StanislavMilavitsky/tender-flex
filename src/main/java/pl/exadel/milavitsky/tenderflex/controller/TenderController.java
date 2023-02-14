@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
-import pl.exadel.milavitsky.tenderflex.dto.PublishTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
@@ -51,9 +51,9 @@ public class TenderController extends PageController<TenderDTO> {
     }
 
     @GetMapping("/new")
-    public ResponseEntity<CreateTenderDTO> add()
+    public ResponseEntity<AddTenderDTO> add()
             throws ServiceException {
-            CreateTenderDTO result = tenderService.collectTenderConstant();
+            AddTenderDTO result = tenderService.collectTenderConstant();
             return  ResponseEntity.ok(result);
         }
 
@@ -61,20 +61,20 @@ public class TenderController extends PageController<TenderDTO> {
     /**
      * Add tender.
      *
-     * @param publishTenderDTO the tender dto
+     * @param createTenderDTO the tender dto
      * @return the response entity
      * @throws ServiceException    the service exception
      * @throws ControllerException if entity fields not valid
      */
 
     @PostMapping()
-    public ResponseEntity<PublishTenderDTO> publish(@RequestBody @Valid PublishTenderDTO publishTenderDTO, BindingResult bindingResult)
+    public ResponseEntity<CreateTenderDTO> create(@RequestBody @Valid CreateTenderDTO createTenderDTO, BindingResult bindingResult)
             throws ServiceException, ControllerException {
         if (bindingResult.hasErrors()) {
             log.error(bindingResultHandler(bindingResult));
             throw new ControllerException(bindingResultHandler(bindingResult));
         } else {
-            PublishTenderDTO result = tenderService.create(publishTenderDTO);
+            CreateTenderDTO result = tenderService.create(createTenderDTO);
             return ResponseEntity.ok(result);
         }
     }

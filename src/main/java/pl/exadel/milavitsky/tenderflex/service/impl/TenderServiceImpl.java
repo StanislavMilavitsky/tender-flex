@@ -7,8 +7,8 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
-import pl.exadel.milavitsky.tenderflex.dto.PublishTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
@@ -51,13 +51,13 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    public PublishTenderDTO create(PublishTenderDTO publishTenderDTO) throws ServiceException {
+    public CreateTenderDTO create(CreateTenderDTO createTenderDTO) throws ServiceException {
         try {
-            Tender tender = mapper.fromDTO(publishTenderDTO);
+            Tender tender = mapper.fromDTO(createTenderDTO);
             tender = tenderRepository.create(tender);
             return mapper.toDTO(tender);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Add tender by title= %s exception!", publishTenderDTO.getName());
+            String exceptionMessage = String.format("Add tender by title= %s exception!", createTenderDTO.getName());
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
@@ -190,14 +190,14 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public CreateTenderDTO collectTenderConstant() throws ServiceException {
+    public AddTenderDTO collectTenderConstant() throws ServiceException {
         try {
-            CreateTenderDTO createTenderDTO = new CreateTenderDTO();
-            createTenderDTO.setCountryList(Arrays.asList(Country.values()));
-            createTenderDTO.setTypeOfTenders(Arrays.asList(TypeOfTender.values()));
-            createTenderDTO.setCurrencies(Arrays.asList(Currency.values()));
-            createTenderDTO.setCpvCodes(tenderRepository.findAllCPVCodes());
-            return createTenderDTO;
+            AddTenderDTO addTenderDTO = new AddTenderDTO();
+            addTenderDTO.setCountryList(Arrays.asList(Country.values()));
+            addTenderDTO.setTypeOfTenders(Arrays.asList(TypeOfTender.values()));
+            addTenderDTO.setCurrencies(Arrays.asList(Currency.values()));
+            addTenderDTO.setCpvCodes(tenderRepository.findAllCPVCodes());
+            return addTenderDTO;
         } catch (DataAccessException exception) {
             String exceptionMessage = "Find constant tenders service exception!";
             log.error(exceptionMessage, exception);

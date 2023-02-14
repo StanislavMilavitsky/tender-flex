@@ -1,8 +1,8 @@
 package pl.exadel.milavitsky.tenderflex.service;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
-import pl.exadel.milavitsky.tenderflex.dto.PublishTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
@@ -20,7 +20,7 @@ public interface TenderService {
     TenderDTO findById(Long id) throws ServiceException;
 
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    PublishTenderDTO create(PublishTenderDTO publishTenderDTO) throws ServiceException;
+    CreateTenderDTO create(CreateTenderDTO createTenderDTO) throws ServiceException;
 
     TenderDTO update(TenderDTO tenderDTO) throws ServiceException;
 
@@ -96,5 +96,5 @@ public interface TenderService {
     long countTendersContractor(String contractorCompany) throws ServiceException;
 
 
-    CreateTenderDTO collectTenderConstant() throws ServiceException;
+    AddTenderDTO collectTenderConstant() throws ServiceException;
 }
