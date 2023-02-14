@@ -33,7 +33,10 @@ create table tenders
     contract varchar (30),
     award_decision varchar (30),
     reject_decision varchar (30),
-    status varchar (10)
+    status varchar (10),
+    id_user bigserial
+     constraint id_user
+        references users
 );
 
 --changeset milavitsky:3
@@ -56,8 +59,8 @@ create table offers
     document varchar (30),
     status varchar (20),
     send_date date,
-    user_id bigserial
+    id_user bigserial
      constraint id_user
-        references users,
+        references users
 );
 
