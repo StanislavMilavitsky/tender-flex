@@ -99,8 +99,4 @@ public interface TenderService {
 
 
     AddTenderDTO collectTenderConstant() throws ServiceException;
-
-    FileDto uploadFile(FileDto request);
-
-    InputStream getObject(String filename);
 }
