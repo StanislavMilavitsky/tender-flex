@@ -1,7 +1,11 @@
 package pl.exadel.milavitsky.tenderflex.service.impl;
 
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
+import pl.exadel.milavitsky.tenderflex.dto.FileDto;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
@@ -23,6 +28,7 @@ import pl.exadel.milavitsky.tenderflex.service.Page;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
 import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +40,13 @@ import java.util.stream.Collectors;
 public class TenderServiceImpl implements TenderService {
 
     private final TenderRepository tenderRepository;
+
     private final Mapper<TenderDTO, Tender> mapper;
+
+    private MinioClient minioClient;
+
+    @Value("${minio.bucket.name}")
+    private String bucketName;
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR') and  hasAuthority('BIDDER')")
@@ -204,5 +216,45 @@ public class TenderServiceImpl implements TenderService {
             throw new ServiceException(exceptionMessage, exception);
 
         }
+    }
+
+    @Override
+    public FileDto uploadFile(FileDto request) {
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(request.getFile().getOriginalFilename())
+                    .stream(request.getFile().getInputStream(), request.getFile().getSize(), -1)
+                    .build());
+        } catch (Exception e) {
+            log.error("Happened error when upload file: ", e);
+        }
+        return FileDto.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .size(request.getFile().getSize())
+                .url(getPreSignedUrl(request.getFile().getOriginalFilename()))
+                .filename(request.getFile().getOriginalFilename())
+                .build();
+    }
+
+    @Override
+    public InputStream getObject(String filename) {
+        InputStream stream;
+        try {
+            stream = minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(filename)
+                    .build());
+        } catch (Exception e) {
+            log.error("Happened error when get list objects from minio: ", e);
+            return null;
+        }
+
+        return stream;
+    }
+
+    private String getPreSignedUrl(String filename) {
+        return "http://localhost:8080//api/v1/tender/".concat(filename);
     }
 }

@@ -2,22 +2,31 @@ package pl.exadel.milavitsky.tenderflex.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
+import pl.exadel.milavitsky.tenderflex.dto.FileDto;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
 import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
+import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE;
 
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -56,6 +65,10 @@ public class TenderController extends PageController<TenderDTO> {
             AddTenderDTO result = tenderService.collectTenderConstant();
             return  ResponseEntity.ok(result);
         }
+
+
+
+
 
 
     /**
@@ -212,4 +225,19 @@ public class TenderController extends PageController<TenderDTO> {
         List<TenderDTO> tenderDTO = tenderService.sortByDateEnd(sortType);
         return ResponseEntity.ok(tenderDTO);
     }
+
+    @PostMapping(value = "/upload")
+    public ResponseEntity<Object> upload(@ModelAttribute FileDto request) {
+        return ResponseEntity.ok().body(tenderService.uploadFile(request));
+    }
+
+    @GetMapping(value = "/**")
+    public ResponseEntity<Object> getFile(HttpServletRequest request) throws IOException {
+        String pattern = (String) request.getAttribute(BEST_MATCHING_PATTERN_ATTRIBUTE);
+        String filename = new AntPathMatcher().extractPathWithinPattern(pattern, request.getServletPath());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(IOUtils.toByteArray(tenderService.getObject(filename)));
+    }
+
 }

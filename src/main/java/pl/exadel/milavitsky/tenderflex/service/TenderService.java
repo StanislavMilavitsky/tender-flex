@@ -3,11 +3,13 @@ package pl.exadel.milavitsky.tenderflex.service;
 import org.springframework.security.access.prepost.PreAuthorize;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
+import pl.exadel.milavitsky.tenderflex.dto.FileDto;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -97,4 +99,8 @@ public interface TenderService {
 
 
     AddTenderDTO collectTenderConstant() throws ServiceException;
+
+    FileDto uploadFile(FileDto request);
+
+    InputStream getObject(String filename);
 }
