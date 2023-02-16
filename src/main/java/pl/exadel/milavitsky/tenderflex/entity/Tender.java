@@ -55,4 +55,6 @@ public class Tender extends Company implements Serializable {
 
     private StatusTender statusTender ;
 
+    private Long idUser;
+
 }

@@ -1,20 +1,14 @@
 package pl.exadel.milavitsky.tenderflex.service.impl;
 
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
-import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
-import pl.exadel.milavitsky.tenderflex.dto.FileDto;
-import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
+import pl.exadel.milavitsky.tenderflex.dto.TenderDto;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
@@ -40,19 +34,14 @@ public class TenderServiceImpl implements TenderService {
 
     private final TenderRepository tenderRepository;
 
-    private final Mapper<TenderDTO, Tender> mapper;
-
-    private final MinioService minioService;
-
-    @Value("${minio.bucket.name}")
-    private String bucketName;
+    private final Mapper<TenderDto, Tender> mapper;
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR') and  hasAuthority('BIDDER')")
-    public TenderDTO findById(Long id) throws ServiceException {
+    public TenderDto findById(Long id) throws ServiceException {
         try {
-            TenderDTO TenderDTO = mapper.toDTO(tenderRepository.findById(id));
-            return TenderDTO;
+            TenderDto tenderDto = mapper.toDTO(tenderRepository.findById(id));
+            return tenderDto;
         } catch (RepositoryException exception) {
             String exceptionMessage = String.format("Cant find tender by id=%d !", id);
             log.error(exceptionMessage, exception);
@@ -62,25 +51,25 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    public CreateTenderDTO create(CreateTenderDTO createTenderDTO) throws ServiceException {
+    public TenderDto create(TenderDto tenderDto) throws ServiceException {//todo user id
         try {
-            Tender tender = mapper.fromDTO(createTenderDTO);
+            Tender tender = mapper.fromDTO(tenderDto);
             tender = tenderRepository.create(tender);
             return mapper.toDTO(tender);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Add tender by title= %s exception!", createTenderDTO.getName());
+            String exceptionMessage = String.format("Add tender by title= %s exception!", tenderDto.getName());
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
     }
 
     @Override
-    public TenderDTO update(TenderDTO tenderDTO) throws ServiceException {
+    public TenderDto update(TenderDto tenderDto) throws ServiceException {
         try {
-            Tender tender = tenderRepository.update(mapper.fromDTO(tenderDTO));
+            Tender tender = tenderRepository.update(mapper.fromDTO(tenderDto));
             return mapper.toDTO(tender);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Update tender by title= %s exception!", tenderDTO);
+            String exceptionMessage = String.format("Update tender by title= %s exception!", tenderDto);
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
@@ -100,7 +89,7 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     @PostAuthorize("hasAuthority('BIDDER')")
-    public List<TenderDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
+    public List<TenderDto> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
             Page userPage = new Page(page, size, count);
@@ -115,7 +104,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public List<TenderDTO> searchByTitleOrDescription(String part) throws ServiceException {
+    public List<TenderDto> searchByTitleOrDescription(String part) throws ServiceException {
         try {
             List<Tender> Tenders = tenderRepository.searchByTitleOrDescription(part);
             return Tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
@@ -127,7 +116,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public List<TenderDTO> sortByTitle(SortType sortType) throws ServiceException {
+    public List<TenderDto> sortByTitle(SortType sortType) throws ServiceException {
         try {
             List<Tender> tenders = tenderRepository.sortByTitle(sortType);
             return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
@@ -139,7 +128,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public List<TenderDTO> sortByDateStart(SortType sortType) throws ServiceException {
+    public List<TenderDto> sortByDateStart(SortType sortType) throws ServiceException {
         try {
             List<Tender> tenders = tenderRepository.sortByDateOfStart(sortType);
             return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
@@ -151,7 +140,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public List<TenderDTO> sortByDateEnd(SortType sortType) throws ServiceException {
+    public List<TenderDto> sortByDateEnd(SortType sortType) throws ServiceException {
         try {
             List<Tender> tenders = tenderRepository.sortByDateOfEnd(sortType);
             return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
@@ -176,11 +165,11 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    public List<TenderDTO> findAllByContractor(int page, int size, String contractorCompany) throws ServiceException, IncorrectArgumentException {
+    public List<TenderDto> findAllByContractor(int page, int size, Long id_user) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = countTendersContractor(contractorCompany);
+            long count = countTendersContractor(id_user);
             Page userPage = new Page(page, size, count);
-            List<Tender> tenders = tenderRepository.findAllTendersContractor(userPage.getOffset(), userPage.getLimit(), contractorCompany);
+            List<Tender> tenders = tenderRepository.findAllTendersContractor(userPage.getOffset(), userPage.getLimit(), id_user);
             return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException exception) {
             String exceptionMessage = "Find all tenders contractor service exception!";
@@ -190,9 +179,9 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
-    public long countTendersContractor(String contractorCompany) throws ServiceException {
+    public long countTendersContractor(Long id_user) throws ServiceException {
         try {
-            return tenderRepository.countOfTendersContractor(contractorCompany);
+            return tenderRepository.countOfTendersContractor(id_user);
         } catch (DataAccessException exception) {
             String exceptionMessage = "Count tenders service exception!";
             log.error(exceptionMessage, exception);

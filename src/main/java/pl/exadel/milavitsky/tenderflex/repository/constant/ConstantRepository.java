@@ -10,6 +10,7 @@ public class ConstantRepository {
     public static final String PERCENT = "%";
     public static final String STATUS = "status";
     public static final String CURRENCY = "currency";
+    public static final String ID_USER = "id_user";
 
 
     /**

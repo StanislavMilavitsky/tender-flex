@@ -7,7 +7,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
 import pl.exadel.milavitsky.tenderflex.entity.Offer;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;

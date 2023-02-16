@@ -2,14 +2,11 @@ package pl.exadel.milavitsky.tenderflex.service;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
-import pl.exadel.milavitsky.tenderflex.dto.CreateTenderDTO;
-import pl.exadel.milavitsky.tenderflex.dto.FileDto;
-import pl.exadel.milavitsky.tenderflex.dto.TenderDTO;
+import pl.exadel.milavitsky.tenderflex.dto.TenderDto;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -19,12 +16,12 @@ import java.util.List;
 public interface TenderService {
 
     @PreAuthorize("hasAuthority('CONTRACTOR') and  hasAuthority('BIDDER')")
-    TenderDTO findById(Long id) throws ServiceException;
+    TenderDto findById(Long id) throws ServiceException;
 
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    CreateTenderDTO create(CreateTenderDTO createTenderDTO) throws ServiceException;
+    TenderDto create(TenderDto tenderDto) throws ServiceException;
 
-    TenderDTO update(TenderDTO tenderDTO) throws ServiceException;
+    TenderDto update(TenderDto tenderDto) throws ServiceException;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     void deleteById(Long id) throws ServiceException;
@@ -34,7 +31,7 @@ public interface TenderService {
      *
      * @return list of all entity
      */
-    List<TenderDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException;
+    List<TenderDto> findAll(int page, int size) throws ServiceException, IncorrectArgumentException;
 
     /**
      * Use method repository layer that find tender by title or description
@@ -43,7 +40,7 @@ public interface TenderService {
      * @return list of found tenders
      * @throws ServiceException if the tenders has not been
      */
-    List<TenderDTO> searchByTitleOrDescription(String part) throws ServiceException;
+    List<TenderDto> searchByTitleOrDescription(String part) throws ServiceException;
 
     /**
      * Use method of repository layer and sort by title
@@ -52,7 +49,7 @@ public interface TenderService {
      * @return sorted list
      * @throws ServiceException if the tenders has not been
      */
-    List<TenderDTO> sortByTitle(SortType sortType) throws ServiceException;
+    List<TenderDto> sortByTitle(SortType sortType) throws ServiceException;
 
     /**
      * Use method of repository layer and sort by date start
@@ -61,7 +58,7 @@ public interface TenderService {
      * @return sorted list
      * @throws ServiceException if the tenders has not been
      */
-    List<TenderDTO> sortByDateStart(SortType sortType) throws ServiceException;
+    List<TenderDto> sortByDateStart(SortType sortType) throws ServiceException;
 
     /**
      * Use method of repository layer and sort by date end
@@ -70,7 +67,7 @@ public interface TenderService {
      * @return sorted list
      * @throws ServiceException if the tenders has not been
      */
-    List<TenderDTO> sortByDateEnd(SortType sortType) throws ServiceException;
+    List<TenderDto> sortByDateEnd(SortType sortType) throws ServiceException;
 
     /**
      * Count of all tenders
@@ -83,19 +80,19 @@ public interface TenderService {
     /**
      * Use method findAllTenderContractor
      *
-     * @param contractorCompany
+     * @param id_user
      * @return list of all tenders of contractor
      */
-    List<TenderDTO> findAllByContractor(int page, int size, String contractorCompany) throws ServiceException, IncorrectArgumentException;
+    List<TenderDto> findAllByContractor(int page, int size, Long id_user) throws ServiceException, IncorrectArgumentException;
 
     /**
      * Count of all tenders not deleted
      *
-     * @param contractorCompany of contractor
+     * @param id_user of contractor
      * @return count
      * @throws ServiceException if count dont sum
      */
-    long countTendersContractor(String contractorCompany) throws ServiceException;
+    long countTendersContractor(Long id_user) throws ServiceException;
 
 
     AddTenderDTO collectTenderConstant() throws ServiceException;

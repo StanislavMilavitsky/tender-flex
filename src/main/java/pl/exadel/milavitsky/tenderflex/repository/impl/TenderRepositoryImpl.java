@@ -70,9 +70,15 @@ public class TenderRepositoryImpl implements TenderRepository {
 
     private static final String COUNT_OF_ALL_TENDERS = "SELECT count(*) FROM tenders;";
 
-    private static final String COUNT_OF_ALL_TENDERS_CONTRACTOR = "SELECT count(*) FROM tenders WHERE contractor_company = ? AND is_deleted = FALSE;";
+    private static final String COUNT_OF_ALL_TENDERS_CONTRACTOR = "SELECT count(*) FROM tenders WHERE id_user = ? AND is_deleted = FALSE;";
 
-    private static final String FIND_ALL_TENDERS_CONTRACTOR = "SELECT tn.id, tn.title, ptnTender_description, tn.budget, tn.date_of_start, tn.date_of_end, tn.is_deleted, tn.user_company FROM tenders tn WHERE tn.is_deleted = false AND contractor_company = ? LIMIT ? OFFSET ?;";
+    private static final String FIND_ALL_TENDERS_CONTRACTOR = "SELECT tn.cpv_code, cc.cpv_description, tn.official_name, tn.status, tn.deadline_for_signing_contract_submission, COUNT(ofc.id) AS \"offers\" " +
+            " FROM tenders tn" +
+            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
+            " JOIN offers ofs tn.id = ofs.id_tender" +
+            " GROUP BY tn.id " +
+            " HAVING ofc.id_tender = tn.id" +
+            " WHERE id_user = ? LIMIT ? OFFSET ?;";
 
     private static final String FIND_ALL_CPV_CODES_SQL = "SELECT cpv_code, cpv_description FROM cpv_codes; ";
 
@@ -100,6 +106,7 @@ public class TenderRepositoryImpl implements TenderRepository {
             parameters.put(AWARD_DECISION, tender.getAwardDecision());
             parameters.put(REJECT_DECISION, tender.getRejectDecision());
             parameters.put(STATUS, tender.getStatusTender().name());
+            parameters.put(ID_USER, tender.getIdUser());
 
             Number id = jdbcInsert.executeAndReturnKey(parameters);
             tender.setId(id.longValue());
@@ -220,13 +227,13 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
     @Override
-    public long countOfTendersContractor(String contractorCompany) {
-        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS_CONTRACTOR, Long.class, contractorCompany);
+    public long countOfTendersContractor(Long id_user) {
+        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS_CONTRACTOR, Long.class, id_user);
     }
 
     @Override
-    public List<Tender> findAllTendersContractor(int offset, int limit, String contractorCompany) {
-        return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR, new BeanPropertyRowMapper<>(Tender.class), limit, offset, contractorCompany);
+    public List<Tender> findAllTendersContractor(int offset, int limit, Long id_user) {
+        return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR, new BeanPropertyRowMapper<>(Tender.class),id_user, limit, offset);
     }
 
     @Override

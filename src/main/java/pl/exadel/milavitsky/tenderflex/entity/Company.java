@@ -11,9 +11,6 @@ import java.io.Serializable;
 @Data
 public abstract class Company implements Serializable {
 
-    @Positive(message = "Should be positive")
-    protected Long idTender;
-
     @NotEmpty(message = "Official name should not be empty")
     @Size(min = 2, max = 50, message = "Official name should be between 2 and 50 characters")
     protected String officialName;

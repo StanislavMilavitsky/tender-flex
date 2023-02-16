@@ -1,7 +1,6 @@
 package pl.exadel.milavitsky.tenderflex.service.impl;
 
 import io.minio.*;
-import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,8 +8,6 @@ import org.springframework.stereotype.Service;
 import pl.exadel.milavitsky.tenderflex.dto.FileDto;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -21,28 +18,6 @@ public class MinioService {
 
     @Value("${minio.bucket.name}")
     private String bucketName;
-
-    public List<FileDto> getListObjects() {
-        List<FileDto> objects = new ArrayList<>();
-        try {
-            Iterable<Result<Item>> result = minioClient.listObjects(ListObjectsArgs.builder()
-                    .bucket(bucketName)
-                    .recursive(true)
-                    .build());
-            for (Result<Item> item : result) {
-                objects.add(FileDto.builder()
-                        .filename(item.get().objectName())
-                        .size(item.get().size())
-                        .url(getPreSignedUrl(item.get().objectName()))
-                        .build());
-            }
-            return objects;
-        } catch (Exception e) {
-            log.error("Happened error when get list objects from minio: ", e);
-        }
-
-        return objects;
-    }
 
     public InputStream getObject(String filename) {
         InputStream stream;
