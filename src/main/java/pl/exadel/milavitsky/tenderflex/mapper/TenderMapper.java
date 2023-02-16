@@ -36,8 +36,8 @@ public class TenderMapper implements Mapper<TenderDto, Tender> {
         tenderDto.setName(tender.getName());
         tenderDto.setSurname(tender.getSurname());
         tenderDto.setPhoneNumber(tender.getPhoneNumber());
-
-
+        tenderDto.setCountOfOffers(tender.getCountOfOffers());
+        tenderDto.setIdUser(tender.getIdUser());
         return tenderDto;
     }
 
@@ -63,6 +63,7 @@ public class TenderMapper implements Mapper<TenderDto, Tender> {
         tender.setName(tenderDto.getName());
         tender.setSurname(tenderDto.getSurname());
         tender.setPhoneNumber(tenderDto.getPhoneNumber());
+        tender.setIdUser(tenderDto.getIdUser());
         return tender;
     }
 }

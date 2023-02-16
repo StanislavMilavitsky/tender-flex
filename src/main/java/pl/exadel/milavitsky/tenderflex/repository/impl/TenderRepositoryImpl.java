@@ -65,14 +65,14 @@ public class TenderRepositoryImpl implements TenderRepository {
     private static final String SORT_BY_DATE_SQL_START_SQL = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
             "FROM tenders tn ORDER BY tn.date_of_start ";
 
-    private static final String SORT_BY_DATE_SQL_END = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
+    private static final String SORT_BY_DATE_SQL_END_SQL = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
             "FROM tenders pr ORDER BY tn.date_of_end ";
 
     private static final String COUNT_OF_ALL_TENDERS = "SELECT count(*) FROM tenders;";
 
-    private static final String COUNT_OF_ALL_TENDERS_CONTRACTOR = "SELECT count(*) FROM tenders WHERE id_user = ? AND is_deleted = FALSE;";
+    private static final String COUNT_OF_ALL_TENDERS_CONTRACTOR_SQL = "SELECT count(*) FROM tenders WHERE id_user = ?;";
 
-    private static final String FIND_ALL_TENDERS_CONTRACTOR = "SELECT tn.cpv_code, cc.cpv_description, tn.official_name, tn.status, tn.deadline_for_signing_contract_submission, COUNT(ofc.id) AS \"offers\" " +
+    private static final String FIND_ALL_TENDERS_CONTRACTOR_SQL = "SELECT tn.cpv_code, cc.cpv_description, tn.official_name, tn.status, tn.deadline_for_signing_contract_submission, COUNT(ofc.id) AS \"count_of_offers\" " +
             " FROM tenders tn" +
             " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
             " JOIN offers ofs tn.id = ofs.id_tender" +
@@ -209,7 +209,7 @@ public class TenderRepositoryImpl implements TenderRepository {
     @Override
     public List<Tender> sortByDateOfEnd(SortType sortType) throws RepositoryException {
         try {
-            StringBuilder builder = new StringBuilder(SORT_BY_DATE_SQL_END);
+            StringBuilder builder = new StringBuilder(SORT_BY_DATE_SQL_END_SQL);
             if (sortType == SortType.DESC) {
                 builder.append(SortType.DESC.name());
             }
@@ -228,12 +228,12 @@ public class TenderRepositoryImpl implements TenderRepository {
 
     @Override
     public long countOfTendersContractor(Long id_user) {
-        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS_CONTRACTOR, Long.class, id_user);
+        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS_CONTRACTOR_SQL, Long.class, id_user);
     }
 
     @Override
     public List<Tender> findAllTendersContractor(int offset, int limit, Long id_user) {
-        return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR, new BeanPropertyRowMapper<>(Tender.class),id_user, limit, offset);
+        return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Tender.class),id_user, limit, offset);
     }
 
     @Override

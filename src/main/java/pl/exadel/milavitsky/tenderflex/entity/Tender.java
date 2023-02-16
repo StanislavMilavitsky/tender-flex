@@ -57,4 +57,5 @@ public class Tender extends Company implements Serializable {
 
     private Long idUser;
 
+    private Integer countOfOffers;
 }

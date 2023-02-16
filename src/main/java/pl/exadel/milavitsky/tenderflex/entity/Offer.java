@@ -30,9 +30,11 @@ public class Offer extends Company implements Serializable {
 
     private String document;
 
-    private StatusOffer statusOffer;
+    private StatusOffer status;
 
     private LocalDate localDate;
 
     private Long userId;
+
+    private LocalDate sendDate;
 }

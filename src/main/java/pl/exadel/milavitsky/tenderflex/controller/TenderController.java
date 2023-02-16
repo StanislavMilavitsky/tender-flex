@@ -101,25 +101,6 @@ public class TenderController extends PageController<TenderDto> {
     }*/
 
     /**
-     * Delete tender by id.
-     *
-     * @param id the id
-     * @return the response entity
-     * @throws ServiceException the service exception
-     * @throws ControllerException if id is incorrect
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable(name = "id") Long id) throws ServiceException, ControllerException {
-        if (id > 0) {
-            tenderService.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else {
-            throw new ControllerException("Negative id exception");
-        }
-
-    }
-
-    /**
      * Find all tenders
      *
      * @param page the page

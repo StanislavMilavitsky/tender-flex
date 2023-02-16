@@ -7,6 +7,8 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import pl.exadel.milavitsky.tenderflex.dto.AddOfferDTO;
+import pl.exadel.milavitsky.tenderflex.dto.OfferDto;
 import pl.exadel.milavitsky.tenderflex.entity.Offer;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
@@ -37,28 +39,36 @@ public class OfferController extends PageController<Offer> {
      * @throws ControllerException if id is incorrect
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PagedModel<Offer>> findOffersByTender(@PathVariable(name = "id") Long id,  @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+    public ResponseEntity<PagedModel<OfferDto>> findOffersByTender(@PathVariable(name = "id") Long id,  @RequestParam(value = "page", required = false, defaultValue = "1") int page,
     @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) throws ServiceException, IncorrectArgumentException {
-        List<Offer> offers = offerService.findOfferByIdTender(page, size, id);
+        List<OfferDto> offers = offerService.findOfferByIdTender(page, size, id);
         long count = offerService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
         List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
-        PagedModel<Offer> pagedModel = PagedModel.of(offers, pageMetadata, linkList);
+        PagedModel<OfferDto> pagedModel = PagedModel.of(offers, pageMetadata, linkList);
         return ResponseEntity.ok(pagedModel);
     }
 
     @PostMapping()
-    public ResponseEntity<Offer> create(@RequestBody @Valid Offer offer, BindingResult bindingResult)
+    public ResponseEntity<OfferDto> create(@RequestBody @Valid OfferDto offerDTO, BindingResult bindingResult)
             throws ServiceException, ControllerException {
         if (bindingResult.hasErrors()) {
             log.error(bindingResultHandler(bindingResult));
             throw new ControllerException(bindingResultHandler(bindingResult));
         } else {
-            Offer result = offerService.create(offer);
+            OfferDto result = offerService.create(offerDTO);
             return ResponseEntity.ok(result);
         }
     }
+
+    @GetMapping("/new")
+    public ResponseEntity<AddOfferDTO> add()
+            throws ServiceException {
+        AddOfferDTO result = offerService.collectOfferConstant();
+        return  ResponseEntity.ok(result);
+    }
+
 
     @Override
     public ResponseEntity<PagedModel<Offer>> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {

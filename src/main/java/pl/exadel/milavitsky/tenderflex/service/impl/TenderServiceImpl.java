@@ -179,6 +179,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CONTRACTOR')")
     public long countTendersContractor(Long id_user) throws ServiceException {
         try {
             return tenderRepository.countOfTendersContractor(id_user);
@@ -190,6 +191,7 @@ public class TenderServiceImpl implements TenderService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CONTRACTOR')")
     public AddTenderDTO collectTenderConstant() throws ServiceException {
         try {
             AddTenderDTO addTenderDTO = new AddTenderDTO();
