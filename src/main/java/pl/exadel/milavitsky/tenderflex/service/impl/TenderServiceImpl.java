@@ -12,6 +12,7 @@ import pl.exadel.milavitsky.tenderflex.dto.TenderDto;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusTender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.TypeOfTender;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
@@ -22,6 +23,7 @@ import pl.exadel.milavitsky.tenderflex.service.Page;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
 import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +56,8 @@ public class TenderServiceImpl implements TenderService {
     public TenderDto create(TenderDto tenderDto) throws ServiceException {//todo user id
         try {
             Tender tender = mapper.fromDTO(tenderDto);
+            tender.setStatusTender(StatusTender.IN_PROGRESS);
+            tender.setPublicationDate(LocalDate.now());
             tender = tenderRepository.create(tender);
             return mapper.toDTO(tender);
         } catch (RepositoryException exception) {

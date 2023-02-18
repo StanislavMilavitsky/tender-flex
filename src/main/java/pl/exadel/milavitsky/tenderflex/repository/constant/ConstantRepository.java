@@ -6,7 +6,6 @@ public class ConstantRepository {
      * Constants common
      */
     public static final String ID = "id";
-    public static final String IS_DELETED = "is_deleted";
     public static final String PERCENT = "%";
     public static final String STATUS = "status";
     public static final String CURRENCY = "currency";
@@ -41,9 +40,9 @@ public class ConstantRepository {
      * Constants for offer entity
      */
     public static final String ID_TENDER = "id_tender";
-    public static final String bid_price = "bid_price";
-    public static final String document = "document" ;
-    public static final String send_date = "send_date";
+    public static final String BID_PRICE = "bid_price";
+    public static final String DOCUMENT = "document";
+    public static final String SEND_DATE = "send_date";
 
     /**
      * Constants for company

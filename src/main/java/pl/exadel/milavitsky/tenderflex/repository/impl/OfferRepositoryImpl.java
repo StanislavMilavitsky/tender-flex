@@ -13,6 +13,7 @@ import pl.exadel.milavitsky.tenderflex.repository.OfferRepository;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,17 +63,27 @@ public class OfferRepositoryImpl implements OfferRepository {
     @Override
     public Offer create(Offer offer) throws RepositoryException {
         try {
-         /*   Map<String, Object> parameters = new HashMap<>();
+            Map<String, Object> parameters = new HashMap<>();
             parameters.put(ID_TENDER, offer.getIdTender());
-            parameters.put(COMPANY_BIDDER, offer.getCompanyBidder());
-            parameters.put(OFFER, offer.getOffer());
-            parameters.put(OFFER_DESCRIPTION, offer.getOfferDescription());
-*/
-           // Number id = jdbcInsert.executeAndReturnKey(parameters);
-           // offer.setId(id.longValue());
+            parameters.put(OFFICIAL_NAME, offer.getOfficialName());
+            parameters.put(NATIONAL_REGISTRATION_NUMBER, offer.getNationalRegistrationNumber());
+            parameters.put(COUNTRY, offer.getCountry().name());
+            parameters.put(CITY, offer.getCity());
+            parameters.put(NAME, offer.getName());
+            parameters.put(SURNAME, offer.getSurname());
+            parameters.put(PHONE_NUMBER, offer.getPhoneNumber());
+            parameters.put(BID_PRICE, offer.getBidPrice());
+            parameters.put(CURRENCY, offer.getCurrency().name());
+            parameters.put(DOCUMENT, offer.getDocument());
+            parameters.put(STATUS, offer.getStatus().name());
+            parameters.put(SEND_DATE, offer.getSendDate());
+            parameters.put(ID_USER, offer.getIdUser());
+
+            Number id = jdbcInsert.executeAndReturnKey(parameters);
+            offer.setId(id.longValue());
             return offer;
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Create offer by id=%d exception sql!", offer.getIdTender());
+            String exceptionMessage = String.format("Create offer by tender id=%d exception sql!", offer.getIdTender());
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
