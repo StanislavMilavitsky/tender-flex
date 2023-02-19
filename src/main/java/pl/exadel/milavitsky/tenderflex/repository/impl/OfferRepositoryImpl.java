@@ -7,13 +7,13 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.entity.Offer;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.repository.OfferRepository;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,16 +38,47 @@ public class OfferRepositoryImpl implements OfferRepository {
                 .usingGeneratedKeyColumns(ID);
     }
 
-
-    public static final String FIND_OFFERS_BY_ID_TENDER_SQL = "SELECT of.id, of.company_bidder, of.offer," +
-            " of.offer_description, of.id_tender, of.answer" +
-            "  FROM offers of " +
-            "INNER JOIN tenders tn ON of.id_tender = tn.id" +
-            " WHERE of.id_tender = ? and tn.is_deleted = false;";
+    public static final String FIND_OFFERS_BY_ID_TENDER_SQL = "SELECT ofs.id, ofs.company_bidder, ofs.offer," +
+            " ofs.offer_description, ofs.id_tender, ofs.answer" +
+            "  FROM offers ofs " +
+            " JOIN tenders tn ON ofs.id_tender = tn.id" +
+            " WHERE ofs.id_tender = ? and tn.is_deleted = false;";
 
     private static final String COUNT_OF_ALL_OFFERS = "SELECT count(*) FROM offers" +
             "INNER JOIN tenders tn ON of.id_tender = tn.id" +
             " WHERE id_tender = ? and tn.is_deleted = false;";
+
+    private static final String FIND_OFFERS_BY_ID_BIDDER_SQL = "SELECT tn.official_name, cc.cpv_description, ofs.currency, ofs.bid_price," +
+            " tn.country, ofs.sent_date, ofs.status, ofs.id" +
+            " FROM offers ofs" +
+            " JOIN tenders tn ON  ofs.id_tender = tn.id" +
+            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
+            " WHERE ofs.id_user = ? LIMIT ? OFFSET ?" ;
+
+    private static final String FIND_OFFER_BY_ID_CONTRACTOR_SQL = "SELECT ofs.official_name, ofs.country, ofs.national_registration_number, ofs.city," +
+            " ofs.name, ofs.phone_number, ofs.surname, ofs.bid_price, ofs.currency, ofs.document" +
+            "  FROM offers ofs" +
+            " WHERE ofs.id = ?";
+
+    private static final String FIND_OFFER_BY_ID_BIDDER_SQL = "SELECT ofs.official_name, ofs.country, ofs.national_registration_number, ofs.city," +
+            " ofs.name, ofs.phone_number, ofs.surname, ofs.bid_price, ofs.currency, tn.contract, tn.award_decision, tn.reject_decision, cc.cpv_code, cc.cpv_description" +
+            " JOIN tenders tn ON  ofs.id_tender = tn.id" +
+            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
+            " WHERE ofs.id = ?";
+
+    private static final String UPDATE_STATUS_REJECT_BY_CONTRACTOR_SQL = "UPDATE offers SET status = ?" +
+            " WHERE id = ?;";
+
+    private static final String UPDATE_STATUS_APPROVED_BY_CONTRACTOR_SQL = "UPDATE offers SET status = ?" +
+            " WHERE id = ?;";
+
+    private static final String UPDATE_STATUS_APPROVED_BY_BIDDER_SQL = "UPDATE offers ofs" +
+            " JOIN tenders tn ON ofs.id_tender = tn.id" +
+            " SET ofs.status = ?, tn.status = ?" +
+            " WHERE id = ?;";
+
+    private static final String UPDATE_STATUS_DECLINED_BY_BIDDER_SQL = "UPDATE offers SET status = ?" +
+            " WHERE id = ?;";
 
     @Override
     public List<Offer> findAllOffersByIdTender(int offset, int limit, Long id) throws RepositoryException {
@@ -76,7 +107,7 @@ public class OfferRepositoryImpl implements OfferRepository {
             parameters.put(CURRENCY, offer.getCurrency().name());
             parameters.put(DOCUMENT, offer.getDocument());
             parameters.put(STATUS, offer.getStatus().name());
-            parameters.put(SEND_DATE, offer.getSendDate());
+            parameters.put(SENT_DATE, offer.getSentDate());
             parameters.put(ID_USER, offer.getIdUser());
 
             Number id = jdbcInsert.executeAndReturnKey(parameters);
@@ -84,6 +115,87 @@ public class OfferRepositoryImpl implements OfferRepository {
             return offer;
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Create offer by tender id=%d exception sql!", offer.getIdTender());
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public List<OffersTenderBidderDto> findAllOffersByBidder(int offset, int limit, Long idUser) throws RepositoryException {
+        return jdbcTemplate.query(FIND_OFFERS_BY_ID_BIDDER_SQL, new BeanPropertyRowMapper<>(OffersTenderBidderDto.class),idUser, limit, offset);
+
+    }
+
+    @Override
+    public Offer findByIdContractor(Long id) throws RepositoryException {
+        try {
+            return jdbcTemplate.queryForObject(FIND_OFFER_BY_ID_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Offer.class), id);
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Read offer by id=%d exception sql!", id);
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public OffersTenderBidderDto findByIdBidder(Long id) throws RepositoryException {
+        try {
+            return jdbcTemplate.queryForObject(FIND_OFFER_BY_ID_BIDDER_SQL, new BeanPropertyRowMapper<>(OffersTenderBidderDto.class), id);
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Read offer by id=%d exception sql!", id);
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public Offer updateRejectByContractor(Offer offer) throws RepositoryException {
+        try {
+            int rows = jdbcTemplate.update(UPDATE_STATUS_REJECT_BY_CONTRACTOR_SQL, offer.getStatus(),
+                    offer.getId());
+            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public Offer updateApprovedByContractor(Offer offer) throws RepositoryException {
+        try {
+            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_CONTRACTOR_SQL, offer.getStatus(),
+                    offer.getId());
+            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public Offer updateApprovedByBidder(Offer offer) throws RepositoryException {
+        try {
+            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_BIDDER_SQL, offer.getStatus(),
+                    offer.getId());
+            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public Offer updateDeclinedByBidder(Offer offer) throws RepositoryException {
+        try {
+            String statusTenderClosed = "CLOSED";
+            int rows = jdbcTemplate.update(UPDATE_STATUS_DECLINED_BY_BIDDER_SQL, offer.getStatus(), statusTenderClosed,
+                    offer.getId());
+            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }

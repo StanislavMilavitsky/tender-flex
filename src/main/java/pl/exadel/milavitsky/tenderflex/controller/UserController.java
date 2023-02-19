@@ -29,47 +29,6 @@ public class UserController extends PageController<User> {
     private final UserService userService;
 
     /**
-     * Find user by id use method from service layer
-     *
-     * @param id user
-     * @return entity user
-     * @throws ServiceException    if cant find user
-     * @throws ControllerException if negative id
-     *//*
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<User> findById(@PathVariable(name = "id") Long id) throws ControllerException, ServiceException {
-        if (id > 0) {
-            User user = userService.findById(id);
-            return ResponseEntity.ok(user);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
-    }
-*/
-    /**
-     * Create user
-     *
-     * @param user is entity user
-     * @param bindingResult errors of validation
-     * @return created user
-     * @throws ControllerException if negative id
-     * @throws ServiceException    the service exception
-     */
-
-    @PostMapping()
-    public ResponseEntity<User> create(@RequestBody @Valid User user, BindingResult bindingResult) throws ControllerException, ServiceException {
-        if (bindingResult.hasErrors()) {
-            log.error(bindingResultHandler(bindingResult));
-            throw new ControllerException(bindingResultHandler(bindingResult));
-        } else {
-            User result = userService.create(user);
-            return ResponseEntity.ok(result);
-        }
-    }
-
-    /**
      * Find all users use method from service layer
      *
      * @param page page

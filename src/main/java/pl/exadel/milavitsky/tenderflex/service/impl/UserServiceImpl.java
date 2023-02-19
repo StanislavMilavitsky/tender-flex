@@ -24,7 +24,6 @@ import pl.exadel.milavitsky.tenderflex.service.UserService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -35,40 +34,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public User findById(Long id) throws ServiceException {
-        try {
-            return userRepository.findById(id);
-        } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Cant find user by id=%d !", id);
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
 
     @Override
-    public User create(User user) throws ServiceException {
-        try {
-            if (user.getRole() == null ){
-                user.setRole(Role.BIDDER);
-            }
-
-            Optional.ofNullable(user.getPassword())
-                    .filter(StringUtils::hasText)
-                    .map(passwordEncoder::encode)
-                    .ifPresent(user::setPassword);
-
-            return userRepository.create(user);
-        } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Add user by username=%s exception!", user.getUsername());
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
-
-
-    @Override
-    // @PostFilter("filterObject.role.name().equals('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
@@ -104,4 +71,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 ))
                 .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user:" + username));
     }
+
 }

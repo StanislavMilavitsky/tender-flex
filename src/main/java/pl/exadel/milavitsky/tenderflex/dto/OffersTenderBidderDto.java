@@ -11,20 +11,25 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Builder
-public class OfferDto extends CompanyDto implements Serializable {
+public class OffersTenderBidderDto extends CompanyDto implements Serializable {
 
     private Long id;
 
-    private Long bidPrice;
+    private String cpvDescription;
+
+    private String cpvCode;
 
     private String currency;
 
-    private String document;
-
-    private String status;
+    private String bidPrice;
 
     private String sentDate;
 
-    private Long idUser;
+    private String status;
 
+    private String awardDecision;
+
+    private String rejectDecision;
+
+    private String contract;
 }

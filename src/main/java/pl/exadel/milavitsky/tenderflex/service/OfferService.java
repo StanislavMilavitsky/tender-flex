@@ -1,9 +1,8 @@
 package pl.exadel.milavitsky.tenderflex.service;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import pl.exadel.milavitsky.tenderflex.dto.AddOfferDTO;
 import pl.exadel.milavitsky.tenderflex.dto.OfferDto;
-import pl.exadel.milavitsky.tenderflex.entity.Offer;
+import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 
@@ -16,17 +15,25 @@ import java.util.List;
 
 public interface OfferService {
 
-    public List<OfferDto> findOfferByIdTender(int page, int size, Long id) throws ServiceException, IncorrectArgumentException;
+    List<OfferDto> findOfferByIdTender(int page, int size, Long id) throws ServiceException, IncorrectArgumentException;
 
+    OfferDto findByIdContractor(Long id) throws ServiceException;
 
-    OfferDto findById(Long id) throws ServiceException;
-
-    @PreAuthorize("hasAuthority('BIDDER')")
     OfferDto create(OfferDto offerDTO) throws ServiceException;
-
-    OfferDto update(OfferDto offerDTO) throws ServiceException;
 
     long count() throws ServiceException;
 
     AddOfferDTO collectOfferConstant() throws ServiceException;
+
+    List<OffersTenderBidderDto> findAllByBidder(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException;
+
+    OffersTenderBidderDto findByIdBidder(Long id) throws ServiceException;
+
+    OfferDto updateRejectByContractor(OfferDto offerDto) throws ServiceException;
+
+    OfferDto updateApprovedByContractor(OfferDto offerDto) throws ServiceException;
+
+    OfferDto updateApprovedByBidder(OfferDto offerDto) throws ServiceException;
+
+    OfferDto updateDeclinedByBidder(OfferDto offerDto) throws ServiceException;
 }

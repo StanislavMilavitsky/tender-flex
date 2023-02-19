@@ -26,8 +26,9 @@ public class OfferMapper implements Mapper<OfferDto, Offer> {
         offerDto.setCurrency(offer.getCurrency().name());
         offerDto.setDocument(offer.getDocument());
         offerDto.setStatus(offer.getStatus().name());
-        offerDto.setSendDate(offer.getSendDate().toString());
-        return null;
+        offerDto.setSentDate(offer.getSentDate().toString());
+        offerDto.setId(offer.getId());
+        return offerDto;
     }
 
     @Override
@@ -44,7 +45,8 @@ public class OfferMapper implements Mapper<OfferDto, Offer> {
         offer.setCurrency(Currency.valueOf(offerDto.getCurrency()));
         offer.setDocument(offerDto.getDocument());
         offer.setStatus(StatusOffer.valueOf(offerDto.getStatus()));
-        offer.setSendDate(LocalDate.parse(offerDto.getSendDate()));
+        offer.setSentDate(LocalDate.parse(offerDto.getSentDate()));
+        offer.setId((offerDto.getId()));
         return offer;
     }
 }

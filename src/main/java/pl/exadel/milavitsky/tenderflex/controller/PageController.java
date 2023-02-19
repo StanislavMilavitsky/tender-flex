@@ -11,11 +11,6 @@ import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Create dynamic link for the page with entity
- * !!!!!!!!!!!!!CHANGE, NO HATEOAS!!!!!!!!!!!!!!!!!!!!!!!!
- * @param <T> entity that must be on page
- */
 public abstract class PageController<T> {
     public abstract ResponseEntity<PagedModel<T>> findAll(int page, int size)
             throws ServiceException, IncorrectArgumentException;

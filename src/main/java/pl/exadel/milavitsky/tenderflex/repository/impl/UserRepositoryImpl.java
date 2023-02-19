@@ -2,22 +2,17 @@ package pl.exadel.milavitsky.tenderflex.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import pl.exadel.milavitsky.tenderflex.entity.User;
-import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.repository.UserRepository;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static pl.exadel.milavitsky.tenderflex.repository.constant.ConstantRepository.*;
@@ -40,19 +35,11 @@ public class UserRepositoryImpl implements UserRepository {
                 .usingGeneratedKeyColumns(ID);
     }
 
-    private static final String FIND_USER_BY_ID_SQL = "SELECT us.id," +
-            " username," +
-            " password," +
-            " date_of_registration," +
-            " role, company, is_deleted" +
-            " FROM users us" +
-            " WHERE us.id = ?;";
-
     public static final String FIND_ALL_USERS_SQL = "SELECT us.id," +
             " username," +
-            " password," +
-            " date_of_registration," +
-            " role, company, is_deleted FROM users us LIMIT ? OFFSET ?";
+            " role," +
+            " last_login_date" +
+            " FROM users us LIMIT ? OFFSET ?";
 
     private static final String COUNT_OF_ALL_USERS_SQL = "SELECT count(*) FROM users WHERE is_deleted = false;";//todo
 
@@ -60,35 +47,7 @@ public class UserRepositoryImpl implements UserRepository {
             " password, date_of_registration, role, last_login_date " +
             "FROM users us WHERE us.username = ?;";
 
-    @Override
-    public User create(User user) throws RepositoryException {
-        try{
-            user.setDateOfRegistration(LocalDate.now());
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put(USERNAME, user.getUsername());
-            parameters.put(PASSWORD, user.getPassword());
-            parameters.put(DATE_OF_REGISTRATION, user.getDateOfRegistration() );
-            parameters.put(ROLE, user.getRole().toString());
-            Number id = jdbcInsert.executeAndReturnKey(parameters);
-            user.setId(id.longValue());
-            return user;
-        } catch (DataAccessException exception){
-            String exceptionMessage = String.format("Create user by Last username=%s exception sql!", user.getUsername());
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
 
-    @Override
-    public User findById(Long id) throws RepositoryException {
-        try {
-            return jdbcTemplate.queryForObject(FIND_USER_BY_ID_SQL, new BeanPropertyRowMapper<>(User.class), id);
-        } catch (DataAccessException exception){
-            String exceptionMessage = String.format("Read user by id=%d exception sql!", id);
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
 
     @Override
     public List<User> findAll(int offset, int limit) {

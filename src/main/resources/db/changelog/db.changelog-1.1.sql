@@ -58,7 +58,7 @@ create table offers
     currency varchar (3),
     document varchar (30),
     status varchar (20),
-    send_date date,
+    sent_date date,
     id_user bigserial
      constraint id_user
         references users

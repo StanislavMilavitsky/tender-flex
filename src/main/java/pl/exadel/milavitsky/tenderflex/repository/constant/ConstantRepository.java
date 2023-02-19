@@ -42,7 +42,7 @@ public class ConstantRepository {
     public static final String ID_TENDER = "id_tender";
     public static final String BID_PRICE = "bid_price";
     public static final String DOCUMENT = "document";
-    public static final String SEND_DATE = "send_date";
+    public static final String SENT_DATE = "sent_date";
 
     /**
      * Constants for company

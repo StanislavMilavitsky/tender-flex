@@ -8,10 +8,6 @@ import java.util.List;
 
 public interface UserService {
 
-    User findById(Long id) throws ServiceException;
-
-    User create(User user) throws ServiceException;
-
     List<User> findAll(int page, int size) throws ServiceException, IncorrectArgumentException;
 
     long count() throws ServiceException;

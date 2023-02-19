@@ -11,10 +11,6 @@ import java.util.Optional;
  */
 public interface UserRepository {
 
-    User create(User user) throws RepositoryException;
-
-    User findById(Long id) throws RepositoryException;
-
     List<User> findAll(int offset, int limit);
 
     long countOfEntity();

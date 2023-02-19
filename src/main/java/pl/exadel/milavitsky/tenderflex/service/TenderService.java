@@ -15,23 +15,16 @@ import java.util.List;
 
 public interface TenderService {
 
-    @PreAuthorize("hasAuthority('CONTRACTOR') and  hasAuthority('BIDDER')")
     TenderDto findById(Long id) throws ServiceException;
 
-    @PreAuthorize("hasAuthority('CONTRACTOR')")
     TenderDto create(TenderDto tenderDto) throws ServiceException;
-
-    TenderDto update(TenderDto tenderDto) throws ServiceException;
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    void deleteById(Long id) throws ServiceException;
 
     /**
      * Use method findAll in repository layer
      *
      * @return list of all entity
      */
-    List<TenderDto> findAll(int page, int size) throws ServiceException, IncorrectArgumentException;
+    List<TenderDto> findAllByBidder(int page, int size) throws ServiceException, IncorrectArgumentException;
 
     /**
      * Use method repository layer that find tender by title or description
@@ -80,19 +73,19 @@ public interface TenderService {
     /**
      * Use method findAllTenderContractor
      *
-     * @param id_user
+     * @param idUser
      * @return list of all tenders of contractor
      */
-    List<TenderDto> findAllByContractor(int page, int size, Long id_user) throws ServiceException, IncorrectArgumentException;
+    List<TenderDto> findAllByContractor(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException;
 
     /**
      * Count of all tenders not deleted
      *
-     * @param id_user of contractor
+     * @param idUser of contractor
      * @return count
      * @throws ServiceException if count dont sum
      */
-    long countTendersContractor(Long id_user) throws ServiceException;
+    long countTendersContractor(Long idUser) throws ServiceException;
 
 
     AddTenderDTO collectTenderConstant() throws ServiceException;

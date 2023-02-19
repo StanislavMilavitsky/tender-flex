@@ -47,20 +47,20 @@ public interface TenderRepository extends BaseRepository <Tender> {
     /**
      * Get count of Tenders at database not deleted
      *
-     * @param id_user
+     * @param idUser
      * @return count
      */
-    long countOfTendersContractor(Long id_user);
+    long countOfTendersContractor(Long idUser);
 
     /**
      * Find all Tenders not deleted
      *
-     * @param id_user
+     * @param idUser
      * @param offset offset
      * @param limit limit
      * @return list of Tenders
      */
-    List<Tender> findAllTendersContractor(int offset, int limit, Long id_user);
+    List<Tender> findAllByContractor(int offset, int limit, Long idUser);
 
     List<CPVCode> findAllCPVCodes();
 

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -30,25 +29,6 @@ import java.util.List;
 public class TenderController extends PageController<TenderDto> {
 
     private final TenderService tenderService;
-
-    /**
-     * Find tender by id.
-     *
-     * @param id the id
-     * @return the response entity
-     * @throws ServiceException  the service exception
-     * @throws ControllerException if id is incorrect
-     */
-    @GetMapping("/{id}/user")
-    public ResponseEntity<TenderDto> findById(@PathVariable(name = "id") Long id) throws ControllerException, ServiceException {
-        if (id > 0) {
-            TenderDto tenderDto = tenderService.findById(id);
-            return ResponseEntity.ok(tenderDto);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
-    }
 
     @GetMapping("/new")
     public ResponseEntity<AddTenderDTO> add()
@@ -80,27 +60,6 @@ public class TenderController extends PageController<TenderDto> {
     }
 
     /**
-     * Update tender. Mark the fields that are not specified for updating null.
-     *
-     * @param tenderDTO the tender dto
-     * @return the response entity
-     * @throws ServiceException the service exception
-     * @throws ControllerException if entity fields not valid
-     */
-  /*  @PutMapping()
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<TenderDTO> update(@RequestBody @Valid TenderDTO tenderDTO,
-                                             BindingResult bindingResult) throws ServiceException, ControllerException {
-        if (bindingResult.hasErrors()) {
-            log.error(bindingResultHandler(bindingResult));
-            throw new ControllerException(bindingResultHandler(bindingResult));
-        } else {
-            TenderDTO result = tenderService.update(tenderDTO);
-            return ResponseEntity.ok(result);
-        }
-    }*/
-
-    /**
      * Find all tenders
      *
      * @param page the page
@@ -115,11 +74,11 @@ public class TenderController extends PageController<TenderDto> {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) throws ServiceException, IncorrectArgumentException {
-        List<TenderDto> tags = tenderService.findAll(page, size);
+        List<TenderDto> tenderDtos = tenderService.findAllByBidder(page, size);
         long count = tenderService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
         List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
-        PagedModel<TenderDto> pagedModel = PagedModel.of(tags, pageMetadata, linkList);
+        PagedModel<TenderDto> pagedModel = PagedModel.of(tenderDtos, pageMetadata, linkList);
         return ResponseEntity.ok(pagedModel);
     }
 
@@ -132,17 +91,36 @@ public class TenderController extends PageController<TenderDto> {
      * @throws ServiceException the service exception
      * @throws IncorrectArgumentException incorrect argument
      */
-    @GetMapping("{id}/all-tenders")
-    public ResponseEntity<PagedModel<TenderDto>> findAllByContractor(@PathVariable(name = "id") Long  id_user,
-    @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    @GetMapping("/all-tenders")
+    public ResponseEntity<PagedModel<TenderDto>> findAllByContractor(@RequestParam(value = "id") Long  idUser,
+                                                                     @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                                                     @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) throws ServiceException, IncorrectArgumentException {
-        List<TenderDto> tenders = tenderService.findAllByContractor(page, size, id_user);
+        List<TenderDto> tenders = tenderService.findAllByContractor(page, size, idUser);
         long count = tenderService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
         List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
         PagedModel<TenderDto> pagedModel = PagedModel.of(tenders, pageMetadata, linkList);
         return ResponseEntity.ok(pagedModel);
+    }
+
+    /**
+     * Find tender by id.
+     *
+     * @param id the id
+     * @return the response entity
+     * @throws ServiceException  the service exception
+     * @throws ControllerException if id is incorrect
+     */
+    @GetMapping()
+    public ResponseEntity<TenderDto> findById(@RequestParam(name = "id") Long id) throws ControllerException, ServiceException {
+        if (id > 0) {
+            TenderDto tenderDto = tenderService.findById(id);
+            return ResponseEntity.ok(tenderDto);
+        } else {
+            log.error("Negative id exception");
+            throw new ControllerException("Negative id exception");
+        }
     }
     /**
      * Search tender by title or description part.

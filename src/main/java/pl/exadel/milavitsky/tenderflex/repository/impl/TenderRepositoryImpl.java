@@ -40,19 +40,15 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
 
-    public static final String FIND_TENDER_BY_ID_SQL = "SELECT tn.id, tn.title, tn.tender_description, tn.budget, tn.date_of_start, tn.is_deleted, tn.date_of_end, tn.user_company" +
-            "  FROM tenders tn WHERE tn.id = ?;";
+    public static final String FIND_TENDER_BY_ID_SQL = "SELECT tn. FROM tenders tn.official_name, tn.country, tn.national_registration_number," +
+            "tn.city, tn.name, tn.phone_number, tn.surname, tn.cpv_code, tn.status, tn.minimum_tender_value," +
+            " tn.maximum_tender_value, tn.currency, tn.description_of_the_procurement, tn.publication_date," +
+            " tn.deadline_for_offer_submission, tn.deadline_for_signing_contract_submission, tn.contract, tn.award_decision, tn.reject_decision, cc.cpv_description " +
+            "JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
+            " WHERE tn.id = ?;";
 
-    public static final String UPDATE_TENDER_BY_ID_SQL = "UPDATE tenders SET title = ?," +
-            "tender_description = ?," +
-            "budget = ?," +
-            "date_of_start = ?," +
-            "date_of_end = ? " +
-            "WHERE id = ?;";
-
-    public static final String DELETE_TENDER_BY_ID_SQL = "UPDATE tenders SET is_deleted = true WHERE tenders.id = ?;";
-
-    public static final String FIND_ALL_TENDERS_SQL = "SELECT tn.id, tn.title, tn.Tender_description, tn.budget, tn.date_of_start, tn.date_of_end, tn.is_deleted, tn.user_company" +
+    public static final String FIND_ALL_TENDERS_BY_BIDDER_SQL = "SELECT tn.official_name, tn.currency, tn.bid_price, tn.country, tn.send_date, tn.status, cc.cpv_description " +
+            "JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code " +
             " FROM tenders tn" +
             " LIMIT ? OFFSET ?;";
 
@@ -68,7 +64,7 @@ public class TenderRepositoryImpl implements TenderRepository {
     private static final String SORT_BY_DATE_SQL_END_SQL = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
             "FROM tenders pr ORDER BY tn.date_of_end ";
 
-    private static final String COUNT_OF_ALL_TENDERS = "SELECT count(*) FROM tenders;";
+    private static final String COUNT_OF_ALL_TENDERS_SQL = "SELECT count(*) FROM tenders;";
 
     private static final String COUNT_OF_ALL_TENDERS_CONTRACTOR_SQL = "SELECT count(*) FROM tenders WHERE id_user = ?;";
 
@@ -86,6 +82,7 @@ public class TenderRepositoryImpl implements TenderRepository {
     public Tender create(Tender tender) throws RepositoryException {
         try {
             Map<String, Object> parameters = new HashMap<>();
+
             parameters.put(OFFICIAL_NAME, tender.getOfficialName());
             parameters.put(NATIONAL_REGISTRATION_NUMBER, tender.getNationalRegistrationNumber());
             parameters.put(COUNTRY, tender.getCountry().name());
@@ -119,6 +116,16 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
     @Override
+    public List<Tender> findAllByContractor(int offset, int limit, Long idUser) {
+        return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Tender.class),idUser, limit, offset);
+    }
+
+    @Override
+    public List<Tender> findAllByBidder(int offset, int limit) {
+        return jdbcTemplate.query(FIND_ALL_TENDERS_BY_BIDDER_SQL, new BeanPropertyRowMapper<>(Tender.class), limit, offset);
+    }
+
+    @Override
     public Tender findById(Long id) throws RepositoryException {
         try {
             return jdbcTemplate.queryForObject(FIND_TENDER_BY_ID_SQL, new BeanPropertyRowMapper<>(Tender.class), id);
@@ -129,40 +136,6 @@ public class TenderRepositoryImpl implements TenderRepository {
         }
     }
 
-    @Override
-    public Tender update(Tender tender) throws RepositoryException {
-        try {
-           /* int rows = jdbcTemplate.update(UPDATE_TENDER_BY_ID_SQL, tender.getTitle(),
-                    tender.getTenderDescription(), tender.getBudget(),
-                    tender.getDateOfStart(), tender.getDateOfEnd(), tender.getId());*/
-            return null;// rows > 0L ? findById(tender.getId()) : null;
-        } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Update tender by id=%d exception sql!", tender.getId());
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public void delete(Long id) throws RepositoryException {
-        try {
-            int rows = jdbcTemplate.update(DELETE_TENDER_BY_ID_SQL, id);
-            if (rows < 0) {
-                String message = String.format("Entity by id=%d was deleted!", id);
-                log.error(message);
-                throw new RepositoryException(message);
-            }
-        } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Delete tender by id=%d exception sql!", id);
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<Tender> findAll(int offset, int limit) {
-        return jdbcTemplate.query(FIND_ALL_TENDERS_SQL, new BeanPropertyRowMapper<>(Tender.class), limit, offset);
-    }
 
     @Override
     public List<Tender> searchByTitleOrDescription(String part) throws RepositoryException {
@@ -223,17 +196,12 @@ public class TenderRepositoryImpl implements TenderRepository {
 
     @Override
     public long countOfEntity() {
-        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS, Long.class);
+        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS_SQL, Long.class);
     }
 
     @Override
-    public long countOfTendersContractor(Long id_user) {
-        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS_CONTRACTOR_SQL, Long.class, id_user);
-    }
-
-    @Override
-    public List<Tender> findAllTendersContractor(int offset, int limit, Long id_user) {
-        return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Tender.class),id_user, limit, offset);
+    public long countOfTendersContractor(Long idUser) {
+        return jdbcTemplate.queryForObject(COUNT_OF_ALL_TENDERS_CONTRACTOR_SQL, Long.class, idUser);
     }
 
     @Override

@@ -22,26 +22,12 @@ public interface BaseRepository <T> {
     T findById(Long id) throws RepositoryException;
 
     /**
-     * Update entity in database without id and create date
-     * @return updated entity if update and null if entity has not been updated
-     * @throws RepositoryException if entity have not been update
-     */
-    T update (T t) throws RepositoryException;
-
-    /**
-     * Delete entity from database by id
-     * @param id field
-     * @throws RepositoryException if entity have not been deleted
-     */
-    void delete(Long id) throws RepositoryException;
-
-    /**
      * Find all in database
      * @param offset the offset
      * @param limit the limit
      * @return list of entity
      */
-    List<T> findAll(int offset, int limit);
+    List<T> findAllByBidder(int offset, int limit);
 
     /**
      * Get count of all users from db
