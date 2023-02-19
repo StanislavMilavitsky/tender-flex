@@ -91,7 +91,7 @@ public class TenderController extends PageController<TenderDto> {
      * @throws ServiceException the service exception
      * @throws IncorrectArgumentException incorrect argument
      */
-    @GetMapping("/all-tenders")
+    @GetMapping("/all-tenders/")
     public ResponseEntity<PagedModel<TenderDto>> findAllByContractor(@RequestParam(value = "id") Long  idUser,
                                                                      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
                                                                      @RequestParam(value = "size", required = false, defaultValue = "3") int size

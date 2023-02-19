@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class MinioConfig {
 
-    @Value("${minio.access.key}")
+    @Value("${minio.access.name}")//todo
     String accessKey;
 
     @Value("${minio.access.secret}")

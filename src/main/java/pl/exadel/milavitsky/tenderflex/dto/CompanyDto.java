@@ -1,18 +1,12 @@
 package pl.exadel.milavitsky.tenderflex.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-@Builder
 public class CompanyDto implements Serializable {
 
     @NotEmpty(message = "Official name should not be empty")
