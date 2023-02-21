@@ -6,6 +6,7 @@ import pl.exadel.milavitsky.tenderflex.entity.CPVCode;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
 import pl.exadel.milavitsky.tenderflex.entity.enums.TypeOfTender;
 
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ public class TenderMapper implements Mapper<TenderDto, Tender> {
         tenderDto.setPhoneNumber(tender.getPhoneNumber());
         tenderDto.setCountOfOffers(tender.getCountOfOffers());
         tenderDto.setIdUser(tender.getIdUser());
+        tenderDto.setStatusOffer(tender.getStatusOffer().name());
         return tenderDto;
     }
 
@@ -64,6 +66,7 @@ public class TenderMapper implements Mapper<TenderDto, Tender> {
         tender.setSurname(tenderDto.getSurname());
         tender.setPhoneNumber(tenderDto.getPhoneNumber());
         tender.setIdUser(tenderDto.getIdUser());
+        tender.setStatusOffer(StatusOffer.valueOf(tenderDto.getStatusOffer()));
         return tender;
     }
 }

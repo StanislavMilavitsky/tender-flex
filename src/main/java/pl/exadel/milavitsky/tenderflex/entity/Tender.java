@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
 import pl.exadel.milavitsky.tenderflex.entity.enums.StatusTender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.TypeOfTender;
 
@@ -58,4 +59,6 @@ public class Tender extends Company implements Serializable {
     private Long idUser;
 
     private Integer countOfOffers;
+
+    private StatusOffer statusOffer;
 }

@@ -27,7 +27,7 @@ public interface BaseRepository <T> {
      * @param limit the limit
      * @return list of entity
      */
-    List<T> findAllByBidder(int offset, int limit);
+    List<T> findAllByBidder(int offset, int limit, Long idUser);
 
     /**
      * Get count of all users from db

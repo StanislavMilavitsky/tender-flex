@@ -21,7 +21,6 @@ import pl.exadel.milavitsky.tenderflex.mapper.Mapper;
 import pl.exadel.milavitsky.tenderflex.repository.TenderRepository;
 import pl.exadel.milavitsky.tenderflex.service.Page;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
-import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -56,11 +55,11 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     @PostAuthorize("hasAuthority('BIDDER')")
-    public List<TenderDto> findAllByBidder(int page, int size) throws ServiceException, IncorrectArgumentException {
+    public List<TenderDto> findAllByBidder(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
             Page userPage = new Page(page, size, count);
-            List<Tender> tenders = tenderRepository.findAllByBidder(userPage.getOffset(), userPage.getLimit());
+            List<Tender> tenders = tenderRepository.findAllByBidder(userPage.getOffset(), userPage.getLimit(), idUser);
             return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException exception) {
             String exceptionMessage = "Find all tenders by bidder service exception!";
@@ -93,54 +92,6 @@ public class TenderServiceImpl implements TenderService {
             return tenderDto;
         } catch (RepositoryException exception) {
             String exceptionMessage = String.format("Cant find tender by id=%d !", id);
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<TenderDto> searchByTitleOrDescription(String part) throws ServiceException {
-        try {
-            List<Tender> Tenders = tenderRepository.searchByTitleOrDescription(part);
-            return Tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
-        } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Find tender by word=%s exception!", part);
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<TenderDto> sortByTitle(SortType sortType) throws ServiceException {
-        try {
-            List<Tender> tenders = tenderRepository.sortByTitle(sortType);
-            return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
-        } catch (RepositoryException exception) {
-            String exceptionMessage = "Sort tenders by title";
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<TenderDto> sortByDateStart(SortType sortType) throws ServiceException {
-        try {
-            List<Tender> tenders = tenderRepository.sortByDateOfStart(sortType);
-            return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
-        } catch (RepositoryException exception) {
-            String exceptionMessage = "Sort tenders by date of start";
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<TenderDto> sortByDateEnd(SortType sortType) throws ServiceException {
-        try {
-            List<Tender> tenders = tenderRepository.sortByDateOfEnd(sortType);
-            return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
-        } catch (RepositoryException exception) {
-            String exceptionMessage = "Sort tenders by date of start";
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }

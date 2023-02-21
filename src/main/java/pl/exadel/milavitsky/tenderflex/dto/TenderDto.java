@@ -55,4 +55,6 @@ public class TenderDto extends CompanyDto implements Serializable {
     private Integer countOfOffers;
 
     private Long idUser;
+
+    private String statusOffer;
 }

@@ -13,7 +13,6 @@ import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
-import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
 import javax.validation.Valid;
 
@@ -68,13 +67,13 @@ public class TenderController extends PageController<TenderDto> {
      * @throws ServiceException the service exception
      * @throws IncorrectArgumentException incorrect argument
      */
-    @Override
     @GetMapping("all-tenders")
     public ResponseEntity<PagedModel<TenderDto>> findAll(
+            @RequestParam(value = "id") Long  idUser,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) throws ServiceException, IncorrectArgumentException {
-        List<TenderDto> tenderDtos = tenderService.findAllByBidder(page, size);
+        List<TenderDto> tenderDtos = tenderService.findAllByBidder(page, size, idUser);
         long count = tenderService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
         List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
@@ -122,54 +121,9 @@ public class TenderController extends PageController<TenderDto> {
             throw new ControllerException("Negative id exception");
         }
     }
-    /**
-     * Search tender by title or description part.
-     *
-     * @param part the part
-     * @return the response entity
-     * @throws ServiceException the service exception
-     */
-    @GetMapping("/part")
-    public ResponseEntity<List<TenderDto>> searchByNameOrDesc(@RequestParam(name = "part") String part)
-            throws ServiceException {
-        List<TenderDto> tenderDTO = tenderService.searchByTitleOrDescription(part);
-        return ResponseEntity.ok(tenderDTO);
-    }
 
-    /**
-     * Sort tender by title.
-     *
-     * @return the response entity
-     * @throws ServiceException the service exception
-     */
-    @GetMapping("/title")
-    public ResponseEntity<List<TenderDto>> sortByName(@RequestParam(name = "sort") SortType sortType) throws ServiceException {
-        List<TenderDto> tenderDTO = tenderService.sortByTitle(sortType);
-        return ResponseEntity.ok(tenderDTO);
+    @Override
+    public ResponseEntity<PagedModel<TenderDto>> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
+        return null;
     }
-
-    /**
-     * Sort tenders by date of start.
-     *
-     * @return the response entity
-     * @throws ServiceException the service exception
-     */
-    @GetMapping("date-start")
-    public ResponseEntity<List<TenderDto>> sortByDateStart(@RequestParam(name = "sort") SortType sortType) throws ServiceException {
-        List<TenderDto> tenderDTO = tenderService.sortByDateStart(sortType);
-        return ResponseEntity.ok(tenderDTO);
-    }
-
-    /**
-     * Sort tenders by date of end.
-     *
-     * @return the response entity
-     * @throws ServiceException the service exception
-     */
-    @GetMapping("/date-end")
-    public ResponseEntity<List<TenderDto>> sortByDateEnd(@RequestParam(name = "sort") SortType sortType) throws ServiceException {
-        List<TenderDto> tenderDTO = tenderService.sortByDateEnd(sortType);
-        return ResponseEntity.ok(tenderDTO);
-    }
-
 }

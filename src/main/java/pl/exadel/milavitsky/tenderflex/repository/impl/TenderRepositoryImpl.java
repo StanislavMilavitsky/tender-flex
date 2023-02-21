@@ -11,7 +11,6 @@ import pl.exadel.milavitsky.tenderflex.entity.CPVCode;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.repository.TenderRepository;
-import pl.exadel.milavitsky.tenderflex.validation.sort.SortType;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -47,22 +46,12 @@ public class TenderRepositoryImpl implements TenderRepository {
             "JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
             " WHERE tn.id = ?;";
 
-    public static final String FIND_ALL_TENDERS_BY_BIDDER_SQL = "SELECT tn.official_name, tn.currency, tn.bid_price, tn.country, tn.send_date, tn.status, cc.cpv_description " +
-            "JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code " +
+    public static final String FIND_ALL_TENDERS_BY_BIDDER_SQL = "SELECT tn.official_name, tn.currency, tn.cpv_code , tn.deadline_for_offer_submission, tn.status, cc.cpv_description, COUNT(*) AS \"count_of_offers\", ofs.status " +
             " FROM tenders tn" +
+            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code " +
+            " JOIN offers ofs ON tn.id = ofs.id_tender" +
+            " WHERE ofs.id_user = ?" +
             " LIMIT ? OFFSET ?;";
-
-    private static final String SELECT_BY_TITLE_OR_DESCRIPTION_SQL = "SELECT tn.id, tn.title, tn.Tender_description, tn.budget, tn.date_of_start," +
-            " tn.date_of_end, tn.is_deleted, tn.user_company FROM tenders tn WHERE tn.title LIKE ? OR pr.tender_description LIKE ?";
-
-    private static final String SORT_BY_TITLE_SQL = "SELECT id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company" +
-            " FROM tenders ORDER BY title ";
-
-    private static final String SORT_BY_DATE_SQL_START_SQL = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
-            "FROM tenders tn ORDER BY tn.date_of_start ";
-
-    private static final String SORT_BY_DATE_SQL_END_SQL = "SELECT tn.id, title, tender_description, budget, date_of_start, date_of_end, is_deleted, tn.user_company " +
-            "FROM tenders pr ORDER BY tn.date_of_end ";
 
     private static final String COUNT_OF_ALL_TENDERS_SQL = "SELECT count(*) FROM tenders;";
 
@@ -72,9 +61,11 @@ public class TenderRepositoryImpl implements TenderRepository {
             " FROM tenders tn" +
             " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
             " JOIN offers ofs tn.id = ofs.id_tender" +
+            " WHERE id_user = ? "+
             " GROUP BY tn.id " +
             " HAVING ofc.id_tender = tn.id" +
-            " WHERE id_user = ? LIMIT ? OFFSET ?;";
+            " LIMIT ? OFFSET ?";
+
 
     private static final String FIND_ALL_CPV_CODES_SQL = "SELECT cpv_code, cpv_description FROM cpv_codes; ";
 
@@ -121,8 +112,8 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
     @Override
-    public List<Tender> findAllByBidder(int offset, int limit) {
-        return jdbcTemplate.query(FIND_ALL_TENDERS_BY_BIDDER_SQL, new BeanPropertyRowMapper<>(Tender.class), limit, offset);
+    public List<Tender> findAllByBidder(int offset, int limit, Long idUser) {
+        return jdbcTemplate.query(FIND_ALL_TENDERS_BY_BIDDER_SQL, new BeanPropertyRowMapper<>(Tender.class), idUser, limit, offset);
     }
 
     @Override
@@ -131,64 +122,6 @@ public class TenderRepositoryImpl implements TenderRepository {
             return jdbcTemplate.queryForObject(FIND_TENDER_BY_ID_SQL, new BeanPropertyRowMapper<>(Tender.class), id);
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Read tender by id=%d exception sql!", id);
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-
-    @Override
-    public List<Tender> searchByTitleOrDescription(String part) throws RepositoryException {
-        try {
-            String sqlPart = PERCENT + part + PERCENT;
-            return jdbcTemplate.query(SELECT_BY_TITLE_OR_DESCRIPTION_SQL, new BeanPropertyRowMapper<>(Tender.class), sqlPart, sqlPart);
-        } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Find tender by word=%s exception sql!", part);
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<Tender> sortByTitle(SortType sortType) throws RepositoryException {
-        try {
-            StringBuilder builder = new StringBuilder(SORT_BY_TITLE_SQL);
-            if (sortType == SortType.DESC) {
-                builder.append(SortType.DESC.name());
-            }
-            return jdbcTemplate.query(builder.toString(), new BeanPropertyRowMapper<>(Tender.class));
-        } catch (DataAccessException exception) {
-            String exceptionMessage = "Sort tenders by title exception sql";
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<Tender> sortByDateOfStart(SortType sortType) throws RepositoryException {
-        try {
-            StringBuilder builder = new StringBuilder(SORT_BY_DATE_SQL_START_SQL);
-            if (sortType == SortType.DESC) {
-                builder.append(SortType.DESC.name());
-            }
-            return jdbcTemplate.query(builder.toString(), new BeanPropertyRowMapper<>(Tender.class));
-        } catch (DataAccessException exception) {
-            String exceptionMessage = "Sort tender by date of start exception sql";
-            log.error(exceptionMessage, exception);
-            throw new RepositoryException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    public List<Tender> sortByDateOfEnd(SortType sortType) throws RepositoryException {
-        try {
-            StringBuilder builder = new StringBuilder(SORT_BY_DATE_SQL_END_SQL);
-            if (sortType == SortType.DESC) {
-                builder.append(SortType.DESC.name());
-            }
-            return jdbcTemplate.query(builder.toString(), new BeanPropertyRowMapper<>(Tender.class));
-        } catch (DataAccessException exception) {
-            String exceptionMessage = "Sort tender by date of end exception sql";
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
