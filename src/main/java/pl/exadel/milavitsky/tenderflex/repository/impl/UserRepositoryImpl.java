@@ -12,6 +12,7 @@ import pl.exadel.milavitsky.tenderflex.repository.UserRepository;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
             " last_login_date" +
             " FROM users us LIMIT ? OFFSET ?";
 
-    private static final String COUNT_OF_ALL_USERS_SQL = "SELECT count(*) FROM users WHERE is_deleted = false;";//todo
+    private static final String COUNT_OF_ALL_USERS_SQL = "SELECT count(*) FROM users";
 
     private static final String FIND_USER_BY_USERNAME_SQL = "SELECT us.id, username," +
             " password, date_of_registration, role, last_login_date " +
@@ -50,8 +51,8 @@ public class UserRepositoryImpl implements UserRepository {
 
 
     @Override
-    public List<User> findAll(int offset, int limit) {
-        return jdbcTemplate.query(FIND_ALL_USERS_SQL,new BeanPropertyRowMapper<>(User.class), limit, offset);
+    public List<User> findAll(Pageable pageable) {
+        return jdbcTemplate.query(FIND_ALL_USERS_SQL,new BeanPropertyRowMapper<>(User.class), pageable.getPageSize(), pageable.getPageNumber());
     }
 
 

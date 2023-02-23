@@ -42,12 +42,6 @@ public abstract class PageController<T> {
         }
         return linkList;
     }
-    /**
-     * Get default message by validate exception
-     *
-     * @param bindingResult exceptions of validate
-     * @return string default message of exception
-     */
     protected String bindingResultHandler(BindingResult bindingResult) {
         return bindingResult.getAllErrors().get(0).getDefaultMessage();
     }

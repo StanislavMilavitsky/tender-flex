@@ -28,6 +28,8 @@ public class OfferMapper implements Mapper<OfferDto, Offer> {
         offerDto.setStatus(offer.getStatus().name());
         offerDto.setSentDate(offer.getSentDate().toString());
         offerDto.setId(offer.getId());
+        offerDto.setIdTender(offer.getIdTender());
+        offerDto.setIdUser(offer.getIdUser());
         return offerDto;
     }
 
@@ -47,6 +49,8 @@ public class OfferMapper implements Mapper<OfferDto, Offer> {
         offer.setStatus(StatusOffer.valueOf(offerDto.getStatus()));
         offer.setSentDate(LocalDate.parse(offerDto.getSentDate()));
         offer.setId((offerDto.getId()));
+        offer.setIdTender(offerDto.getIdTender());
+        offer.setIdUser(offerDto.getIdUser());
         return offer;
     }
 }

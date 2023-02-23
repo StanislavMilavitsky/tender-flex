@@ -69,9 +69,9 @@ public class OfferServiceImpl implements OfferService {
     @PreAuthorize("hasAuthority('BIDDER')")
     public OfferDto create(OfferDto offerDTO) throws ServiceException {
         try {
+            offerDTO.setStatus("OFFER_SENT");
+            offerDTO.setSentDate(LocalDate.now().toString());
             Offer offer = mapper.fromDTO(offerDTO);
-            offer.setStatus(StatusOffer.OFFER_SENT);
-            offer.setSentDate(LocalDate.now());
             offer = offerRepository.create(offer);
             return mapper.toDTO(offer);
         } catch (RepositoryException exception) {

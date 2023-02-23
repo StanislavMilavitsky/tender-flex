@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,17 +12,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import pl.exadel.milavitsky.tenderflex.entity.enums.Role;
 import pl.exadel.milavitsky.tenderflex.entity.User;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
-import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.repository.UserRepository;
-import pl.exadel.milavitsky.tenderflex.service.Page;
 import pl.exadel.milavitsky.tenderflex.service.UserService;
 
-import java.util.ArrayList;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,25 +35,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<User> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
+    public Page<User> findAll(Pageable pageable) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = count();
-            Page userPage = new Page(page, size, count);
-            return new ArrayList<>(userRepository.findAll(userPage.getOffset(), userPage.getLimit()));
+            List<User> users = userRepository.findAll(pageable);
+            long cont = userRepository.countOfEntity();
+            Page<User> pages = new PageImpl<User>(users, pageable, cont);
+            return pages;
         } catch (DataAccessException exception) {
             String exceptionMessage = "Find all users service exception!";
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
-
-    @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public long count() throws ServiceException {
-        try {
-            return userRepository.countOfEntity();
-        } catch (DataAccessException exception) {
-            String exceptionMessage = "Count users service exception!";
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }

@@ -27,4 +27,6 @@ public class OfferDto extends CompanyDto implements Serializable {
 
     private Long idUser;
 
+    private Long idTender;
+
 }

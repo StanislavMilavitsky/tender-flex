@@ -30,10 +30,10 @@ create table tenders
     publication_date date,
     deadline_for_offer_submission date,
     deadline_for_signing_contract_submission date,
-    contract varchar (30),
-    award_decision varchar (30),
-    reject_decision varchar (30),
-    status varchar (10),
+    contract varchar (60),
+    award_decision varchar (60),
+    reject_decision varchar (60),
+    status varchar (30),
     id_user bigserial
      constraint id_user
         references users
@@ -56,8 +56,8 @@ create table offers
     phone_number varchar (20),
     bid_price bigint,
     currency varchar (3),
-    document varchar (30),
-    status varchar (20),
+    document varchar (60),
+    status varchar (30),
     sent_date date,
     id_user bigserial
      constraint id_user

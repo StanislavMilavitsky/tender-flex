@@ -1,8 +1,8 @@
 package pl.exadel.milavitsky.tenderflex.repository;
 
 import pl.exadel.milavitsky.tenderflex.entity.User;
-import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public interface UserRepository {
 
-    List<User> findAll(int offset, int limit);
+    List<User> findAll(Pageable pageable);
 
     long countOfEntity();
 

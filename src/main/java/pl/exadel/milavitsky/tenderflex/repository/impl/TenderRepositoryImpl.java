@@ -46,12 +46,8 @@ public class TenderRepositoryImpl implements TenderRepository {
             "JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
             " WHERE tn.id = ?;";
 
-    public static final String FIND_ALL_TENDERS_BY_BIDDER_SQL = "SELECT tn.official_name, tn.currency, tn.cpv_code , tn.deadline_for_offer_submission, tn.status, cc.cpv_description, COUNT(*) AS \"count_of_offers\", ofs.status " +
-            " FROM tenders tn" +
-            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code " +
-            " JOIN offers ofs ON tn.id = ofs.id_tender" +
-            " WHERE ofs.id_user = ?" +
-            " LIMIT ? OFFSET ?;";
+    public static final String FIND_ALL_TENDERS_BY_BIDDER_SQL = "SELECT tn.official_name, tn.currency, tn.cpv_code , tn.deadline_for_offer_submission, tn.status AS \"tender_status\", cc.cpv_description, ofs.status" +
+            " AS \"offer_status\" FROM tenders tn JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_codeJOIN offers ofs ON tn.id = ofs.id_tenderWHERE tn.id_user = ? LIMIT ? OFFSET ? ";
 
     private static final String COUNT_OF_ALL_TENDERS_SQL = "SELECT count(*) FROM tenders;";
 

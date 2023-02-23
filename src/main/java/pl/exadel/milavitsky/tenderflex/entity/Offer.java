@@ -32,8 +32,6 @@ public class Offer extends Company implements Serializable {
 
     private StatusOffer status;
 
-    private LocalDate localDate;
-
     private Long idUser;
 
     private LocalDate sentDate;
