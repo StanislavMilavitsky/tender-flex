@@ -24,7 +24,9 @@ public class Tender extends Company implements Serializable {
     @Positive(message = "Should be positive")
     protected Long id;
 
-    private CPVCode cpvCode;
+    private String cpvCode;
+
+    private String cpvDescription;
 
     private TypeOfTender typeOfTender;
 

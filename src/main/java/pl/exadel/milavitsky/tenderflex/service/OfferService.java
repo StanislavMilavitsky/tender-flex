@@ -21,19 +21,17 @@ public interface OfferService {
 
     OfferDto create(OfferDto offerDTO) throws ServiceException;
 
-    long count() throws ServiceException;
-
     AddOfferDTO collectOfferConstant() throws ServiceException;
 
     List<OffersTenderBidderDto> findAllByBidder(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException;
 
     OffersTenderBidderDto findByIdBidder(Long id) throws ServiceException;
 
-    OfferDto updateRejectByContractor(OfferDto offerDto) throws ServiceException;
+    OfferDto updateRejectByContractor(Long id) throws ServiceException;
 
-    OfferDto updateApprovedByContractor(OfferDto offerDto) throws ServiceException;
+    OfferDto updateApprovedByContractor(Long id) throws ServiceException;
 
-    OfferDto updateApprovedByBidder(OfferDto offerDto) throws ServiceException;
+    OfferDto updateApprovedByBidder(Long id) throws ServiceException;
 
-    OfferDto updateDeclinedByBidder(OfferDto offerDto) throws ServiceException;
+    OfferDto updateDeclinedByBidder(Long id) throws ServiceException;
 }

@@ -2,7 +2,6 @@ package pl.exadel.milavitsky.tenderflex.mapper;
 
 import org.springframework.stereotype.Component;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDto;
-import pl.exadel.milavitsky.tenderflex.entity.CPVCode;
 import pl.exadel.milavitsky.tenderflex.entity.Tender;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
@@ -16,37 +15,37 @@ import java.time.LocalDate;
 public class TenderMapper implements Mapper<TenderDto, Tender> {
     @Override
     public TenderDto toDTO(Tender tender) {
+
         TenderDto tenderDto = new TenderDto();
-        tenderDto.setCpvCode(tender.getCpvCode().getCpvCode());
-        tenderDto.setCpvDescription(tender.getCpvCode().getDescriptionCPVCode());
-        tenderDto.setTypeOfTender(tender.getTypeOfTender().name());
+        if (tender.getTypeOfTender()!=null) tenderDto.setTypeOfTender(tender.getTypeOfTender().name());
         tenderDto.setDescriptionOfTheProcurement(tender.getDescriptionOfTheProcurement());
         tenderDto.setMinimumTenderValue(tender.getMinimumTenderValue());
         tenderDto.setMaximumTenderValue(tender.getMaximumTenderValue());
-        tenderDto.setCurrency(tender.getCurrency().name());
-        tenderDto.setPublicationDate(tender.getPublicationDate().toString());
-        tenderDto.setDeadlineForOfferSubmission(tender.getDeadlineForOfferSubmission().toString());
-        tenderDto.setDeadlineForSigningContractSubmission(tender.getDeadlineForSigningContractSubmission().toString());
+        if (tender.getCurrency()!=null) tenderDto.setCurrency(tender.getCurrency().name());
+        if (tender.getPublicationDate()!=null) tenderDto.setPublicationDate(tender.getPublicationDate().toString());
+        if (tender.getDeadlineForOfferSubmission()!=null) tenderDto.setDeadlineForOfferSubmission(tender.getDeadlineForOfferSubmission().toString());
+        if (tender.getDeadlineForSigningContractSubmission()!=null)tenderDto.setDeadlineForSigningContractSubmission(tender.getDeadlineForSigningContractSubmission().toString());
         tenderDto.setContract(tender.getContract());
         tenderDto.setContract(tender.getAwardDecision());
         tenderDto.setRejectDecision(tender.getRejectDecision());
         tenderDto.setOfficialName(tender.getOfficialName());
         tenderDto.setNationalRegistrationNumber(tender.getNationalRegistrationNumber());
-        tenderDto.setCountry(tender.getCountry().name());
+        if (tender.getCountry()!=null) tenderDto.setCountry(tender.getCountry().name());
         tenderDto.setCity(tender.getCity());
         tenderDto.setName(tender.getName());
         tenderDto.setSurname(tender.getSurname());
         tenderDto.setPhoneNumber(tender.getPhoneNumber());
         tenderDto.setCountOfOffers(tender.getCountOfOffers());
         tenderDto.setIdUser(tender.getIdUser());
-        tenderDto.setStatusOffer(tender.getStatusOffer().name());
+        tenderDto.setCpvCode(tender.getCpvCode());
+        tenderDto.setCpvDescription(tender.getCpvDescription());
+        if (tender.getStatusOffer()!=null) tenderDto.setStatusOffer(tender.getStatusOffer().name());
         return tenderDto;
     }
 
     @Override
     public Tender fromDTO(TenderDto tenderDto) {
         Tender tender = new Tender();
-        tender.setCpvCode(new CPVCode(tenderDto.getCpvCode(), null));
         tender.setTypeOfTender(TypeOfTender.valueOf(tenderDto.getTypeOfTender()));
         tender.setDescriptionOfTheProcurement(tenderDto.getDescriptionOfTheProcurement());
         tender.setMinimumTenderValue(tenderDto.getMinimumTenderValue());
@@ -67,6 +66,8 @@ public class TenderMapper implements Mapper<TenderDto, Tender> {
         tender.setPhoneNumber(tenderDto.getPhoneNumber());
         tender.setIdUser(tenderDto.getIdUser());
         tender.setStatusOffer(StatusOffer.valueOf(tenderDto.getStatusOffer()));
+        tender.setCpvCode(tenderDto.getCpvCode());
+        tender.setCpvDescription(tenderDto.getCpvDescription());
         return tender;
     }
 }

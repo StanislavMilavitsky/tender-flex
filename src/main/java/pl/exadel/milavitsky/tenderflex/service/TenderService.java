@@ -1,11 +1,12 @@
 package pl.exadel.milavitsky.tenderflex.service;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDto;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 
-import java.util.List;
 
 /**
  *  Service layer use methods from repository layer
@@ -22,23 +23,16 @@ public interface TenderService {
      *
      * @return list of all entity
      */
-    List<TenderDto> findAllByBidder(int page, int size, Long isUser) throws ServiceException, IncorrectArgumentException;
+    Page<TenderDto> findAllByBidder(Pageable pageable, Long id) throws ServiceException, IncorrectArgumentException;
 
-    /**
-     * Count of all tenders
-     *
-     * @return count
-     * @throws ServiceException if count dont sum
-     */
-    long count() throws ServiceException;
 
     /**
      * Use method findAllTenderContractor
      *
-     * @param idUser
+     * @param
      * @return list of all tenders of contractor
      */
-    List<TenderDto> findAllByContractor(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException;
+    Page<TenderDto> findAllByContractor(Pageable pageable, Long id) throws ServiceException, IncorrectArgumentException;
 
     /**
      * Count of all tenders not deleted

@@ -3,6 +3,7 @@ package pl.exadel.milavitsky.tenderflex.repository.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -39,15 +40,14 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
 
-    public static final String FIND_TENDER_BY_ID_SQL = "SELECT tn. FROM tenders tn.official_name, tn.country, tn.national_registration_number," +
-            "tn.city, tn.name, tn.phone_number, tn.surname, tn.cpv_code, tn.status, tn.minimum_tender_value," +
-            " tn.maximum_tender_value, tn.currency, tn.description_of_the_procurement, tn.publication_date," +
-            " tn.deadline_for_offer_submission, tn.deadline_for_signing_contract_submission, tn.contract, tn.award_decision, tn.reject_decision, cc.cpv_description " +
-            "JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
-            " WHERE tn.id = ?;";
+    public static final String FIND_TENDER_BY_ID_SQL = "SELECT tn.official_name, tn.country, tn.national_registration_number,tn.city, tn.name, tn.phone_number," +
+            "       tn.surname, tn.cpv_code, tn.status, tn.minimum_tender_value, tn.maximum_tender_value, tn.currency," +
+            "       tn.description_of_the_procurement, tn.publication_date, tn.deadline_for_offer_submission," +
+            "       tn.deadline_for_signing_contract_submission, tn.contract, tn.award_decision, tn.reject_decision," +
+            "       cc.cpv_description" +
+            "    FROM tenders tn" +
+            "    JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code WHERE tn.id_user =? LIMIT ? OFFSET ?";
 
-    public static final String FIND_ALL_TENDERS_BY_BIDDER_SQL = "SELECT tn.official_name, tn.currency, tn.cpv_code , tn.deadline_for_offer_submission, tn.status AS \"tender_status\", cc.cpv_description, ofs.status" +
-            " AS \"offer_status\" FROM tenders tn JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_codeJOIN offers ofs ON tn.id = ofs.id_tenderWHERE tn.id_user = ? LIMIT ? OFFSET ? ";
 
     private static final String COUNT_OF_ALL_TENDERS_SQL = "SELECT count(*) FROM tenders;";
 
@@ -77,7 +77,6 @@ public class TenderRepositoryImpl implements TenderRepository {
             parameters.put(NAME, tender.getName());
             parameters.put(SURNAME, tender.getSurname());
             parameters.put(PHONE_NUMBER, tender.getPhoneNumber());
-            parameters.put(CPV_CODE, tender.getCpvCode().getCpvCode());
             parameters.put(TYPE_OF_TENDER, tender.getTypeOfTender().name());
             parameters.put(DESCRIPTION_OF_THE_PROCUREMENT, tender.getDescriptionOfTheProcurement());
             parameters.put(MINIMUM_TENDER_VALUE, tender.getMinimumTenderValue());
@@ -103,13 +102,15 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
     @Override
-    public List<Tender> findAllByContractor(int offset, int limit, Long idUser) {
-        return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Tender.class),idUser, limit, offset);
-    }
-
-    @Override
-    public List<Tender> findAllByBidder(int offset, int limit, Long idUser) {
-        return jdbcTemplate.query(FIND_ALL_TENDERS_BY_BIDDER_SQL, new BeanPropertyRowMapper<>(Tender.class), idUser, limit, offset);
+    public List<Tender> findAllById(Pageable pageable, Long id) throws RepositoryException{
+        try {
+            return jdbcTemplate.query(FIND_TENDER_BY_ID_SQL, new BeanPropertyRowMapper<>(Tender.class),
+                    id, pageable.getPageSize(), pageable.getOffset());
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Read tender by id=%d exception sql!", id);
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
     }
 
     @Override

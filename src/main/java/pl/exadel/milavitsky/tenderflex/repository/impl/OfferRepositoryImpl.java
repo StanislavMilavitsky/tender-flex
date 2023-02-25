@@ -56,12 +56,13 @@ public class OfferRepositoryImpl implements OfferRepository {
             " WHERE ofs.id_user = ? LIMIT ? OFFSET ?" ;
 
     private static final String FIND_OFFER_BY_ID_CONTRACTOR_SQL = "SELECT ofs.official_name, ofs.country, ofs.national_registration_number, ofs.city," +
-            " ofs.name, ofs.phone_number, ofs.surname, ofs.bid_price, ofs.currency, ofs.document" +
+            " ofs.name, ofs.phone_number, ofs.surname, ofs.bid_price, ofs.currency, ofs.document, ofs.status, ofs.sent_date" +
             "  FROM offers ofs" +
             " WHERE ofs.id = ?";
 
     private static final String FIND_OFFER_BY_ID_BIDDER_SQL = "SELECT ofs.official_name, ofs.country, ofs.national_registration_number, ofs.city," +
             " ofs.name, ofs.phone_number, ofs.surname, ofs.bid_price, ofs.currency, tn.contract, tn.award_decision, tn.reject_decision, cc.cpv_code, cc.cpv_description" +
+            " FROM offers ofs" +
             " JOIN tenders tn ON  ofs.id_tender = tn.id" +
             " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
             " WHERE ofs.id = ?";
@@ -72,10 +73,11 @@ public class OfferRepositoryImpl implements OfferRepository {
     private static final String UPDATE_STATUS_APPROVED_BY_CONTRACTOR_SQL = "UPDATE offers SET status = ?" +
             " WHERE id = ?;";
 
-    private static final String UPDATE_STATUS_APPROVED_BY_BIDDER_SQL = "UPDATE offers ofs" +
-            " JOIN tenders tn ON ofs.id_tender = tn.id" +
-            " SET ofs.status = ?, tn.status = ?" +
+    private static final String UPDATE_STATUS_APPROVED_BY_BIDDER_SQL = "UPDATE offers " +
+            " SET status = ? " +
             " WHERE id = ?;";
+
+    private static final String UPDATE_STATUS_CLOSED_BY_BIDDER_SQL = "UPDATE tenders tn SET status = ? FROM offers ofs WHERE tn.id = ofs.id_tender AND ofs.id = ?;";
 
     private static final String UPDATE_STATUS_DECLINED_BY_BIDDER_SQL = "UPDATE offers SET status = ?" +
             " WHERE id = ?;";
@@ -149,53 +151,49 @@ public class OfferRepositoryImpl implements OfferRepository {
     }
 
     @Override
-    public Offer updateRejectByContractor(Offer offer) throws RepositoryException {
+    public Offer updateRejectByContractor(Long id) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_STATUS_REJECT_BY_CONTRACTOR_SQL, offer.getStatus(),
-                    offer.getId());
-            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+            int rows = jdbcTemplate.update(UPDATE_STATUS_REJECT_BY_CONTRACTOR_SQL, "OFFER_REJECTED_BY_CONTRACTOR", id);
+            return  rows > 0L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
     }
 
     @Override
-    public Offer updateApprovedByContractor(Offer offer) throws RepositoryException {
+    public Offer updateApprovedByContractor(Long id) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_CONTRACTOR_SQL, offer.getStatus(),
-                    offer.getId());
-            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_CONTRACTOR_SQL,"OFFER_APPROVED_BY_CONTRACTOR", id);
+            return  rows > 0L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
     }
 
     @Override
-    public Offer updateApprovedByBidder(Offer offer) throws RepositoryException {
+    public Offer updateApprovedByBidder(Long id) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_BIDDER_SQL, offer.getStatus(),
-                    offer.getId());
-            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_BIDDER_SQL,"CONTRACT_APPROVED_BY_BIDDER", id);
+            int rows2 = jdbcTemplate.update(UPDATE_STATUS_CLOSED_BY_BIDDER_SQL,"CLOSED", id);
+            return  rows + rows2 > 1L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
     }
 
     @Override
-    public Offer updateDeclinedByBidder(Offer offer) throws RepositoryException {
+    public Offer updateDeclinedByBidder(Long id) throws RepositoryException {
         try {
-            String statusTenderClosed = "CLOSED";
-            int rows = jdbcTemplate.update(UPDATE_STATUS_DECLINED_BY_BIDDER_SQL, offer.getStatus(), statusTenderClosed,
-                    offer.getId());
-            return  rows > 0L ? findByIdContractor(offer.getId()) : null;
+            int rows = jdbcTemplate.update(UPDATE_STATUS_DECLINED_BY_BIDDER_SQL, "CONTRACT_DECLINED_BY_BIDDER", id);
+            return  rows > 0L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Update tender by id=%d exception sql!", offer.getId());
+            String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }

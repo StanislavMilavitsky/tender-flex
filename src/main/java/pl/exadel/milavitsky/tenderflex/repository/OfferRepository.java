@@ -35,11 +35,11 @@ public interface OfferRepository {
 
     OffersTenderBidderDto findByIdBidder(Long id) throws RepositoryException;
 
-    Offer updateRejectByContractor(Offer offer) throws RepositoryException;
+    Offer updateRejectByContractor(Long id) throws RepositoryException;
 
-    Offer updateApprovedByContractor(Offer offer) throws RepositoryException;
+    Offer updateApprovedByContractor(Long id) throws RepositoryException;
 
-    Offer updateApprovedByBidder(Offer offer) throws RepositoryException;
+    Offer updateApprovedByBidder(Long id) throws RepositoryException;
 
-    Offer updateDeclinedByBidder(Offer offer) throws RepositoryException;
+    Offer updateDeclinedByBidder(Long id) throws RepositoryException;
 }

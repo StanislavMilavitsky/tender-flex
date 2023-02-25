@@ -1,6 +1,8 @@
 package pl.exadel.milavitsky.tenderflex.repository;
 
+import org.springframework.data.domain.Pageable;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
+
 
 import java.util.List;
 
@@ -23,11 +25,10 @@ public interface BaseRepository <T> {
 
     /**
      * Find all in database
-     * @param offset the offset
-     * @param limit the limit
+     *
      * @return list of entity
      */
-    List<T> findAllByBidder(int offset, int limit, Long idUser);
+    List<T> findAllById(Pageable pageable, Long id)throws RepositoryException;
 
     /**
      * Get count of all users from db

@@ -3,6 +3,9 @@ package pl.exadel.milavitsky.tenderflex.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,6 @@ import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.mapper.Mapper;
 import pl.exadel.milavitsky.tenderflex.repository.TenderRepository;
-import pl.exadel.milavitsky.tenderflex.service.Page;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
 
 import java.time.LocalDate;
@@ -55,29 +57,29 @@ public class TenderServiceImpl implements TenderService {
 
     @Override
     @PostAuthorize("hasAuthority('BIDDER')")
-    public List<TenderDto> findAllByBidder(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException {
+    public Page<TenderDto> findAllByBidder(Pageable pageable, Long id) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = count();
-            Page userPage = new Page(page, size, count);
-            List<Tender> tenders = tenderRepository.findAllByBidder(userPage.getOffset(), userPage.getLimit(), idUser);
-            return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
-        } catch (DataAccessException exception) {
+            long count = tenderRepository.countOfEntity();
+            List<Tender> tenders = tenderRepository.findAllById(pageable, id);
+            List<TenderDto> tenderDtos = tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
+            return new PageImpl<>(tenderDtos,pageable,count);
+        } catch (DataAccessException|RepositoryException exception) {
             String exceptionMessage = "Find all tenders by bidder service exception!";
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
-
     }
+
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    public List<TenderDto> findAllByContractor(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException {
+    public Page<TenderDto> findAllByContractor(Pageable pageable, Long id) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = countTendersContractor(idUser);
-            Page userPage = new Page(page, size, count);
-            List<Tender> tenders = tenderRepository.findAllByContractor(userPage.getOffset(), userPage.getLimit(), idUser);
-            return tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
-        } catch (DataAccessException exception) {
+            long count = tenderRepository.countOfEntity();
+            List<Tender> tenders = tenderRepository.findAllById(pageable, id);
+            List<TenderDto> tenderDtos = tenders.stream().map(mapper::toDTO).collect(Collectors.toList());
+            return new PageImpl<>(tenderDtos,pageable,count);
+        } catch (DataAccessException|RepositoryException exception) {
             String exceptionMessage = "Find all tenders by contractor contractor service exception!";
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
@@ -97,16 +99,6 @@ public class TenderServiceImpl implements TenderService {
         }
     }
 
-    @Override
-    public long count() throws ServiceException {
-        try {
-            return tenderRepository.countOfEntity();
-        } catch (DataAccessException exception) {
-            String exceptionMessage = "Count tenders service exception!";
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
 
 
     @Override

@@ -2,17 +2,18 @@ package pl.exadel.milavitsky.tenderflex.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import pl.exadel.milavitsky.tenderflex.dto.AddOfferDTO;
 import pl.exadel.milavitsky.tenderflex.dto.OfferDto;
 import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.entity.Offer;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
-import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
@@ -36,11 +37,13 @@ public class OfferServiceImpl implements OfferService {
 
     private final Mapper<OfferDto, Offer> mapper;
 
+    private final ModelMapper modelMapper;
+
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
     public List<OfferDto> findOfferByIdTender(int page, int size, Long id) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = count();
+            long count = offerRepository.countOfEntity();
             Page offerPage = new Page(page, size, count);
             List<Offer>  offers = offerRepository.findAllOffersByIdTender(offerPage.getOffset(), offerPage.getLimit(), id);
             return offers.stream().map(mapper::toDTO).collect(Collectors.toList());
@@ -55,7 +58,7 @@ public class OfferServiceImpl implements OfferService {
     @PreAuthorize("hasAuthority('BIDDER')")
     public List<OffersTenderBidderDto> findAllByBidder(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = count();
+            long count = offerRepository.countOfEntity();
             Page offerPage = new Page(page, size, count);
             return offerRepository.findAllOffersByBidder(offerPage.getOffset(), offerPage.getLimit(), idUser);
         } catch (RepositoryException exception) {
@@ -95,7 +98,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('CONTRACTOR')")
+    @PreAuthorize("hasAuthority('BIDDER')")
     public OffersTenderBidderDto findByIdBidder(Long id) throws ServiceException  {
         try {
             return offerRepository.findByIdBidder(id);
@@ -108,12 +111,12 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    public OfferDto updateRejectByContractor(OfferDto offerDto) throws ServiceException {
+    public OfferDto updateRejectByContractor(Long id) throws ServiceException {
         try {
-            Offer offer = offerRepository.updateRejectByContractor(mapper.fromDTO(offerDto));
-            return mapper.toDTO(offer);
+            Offer offer = offerRepository.updateRejectByContractor(id);
+            return modelMapper.map(offer, OfferDto.class);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Update status = %s exception!", offerDto.getStatus());
+            String exceptionMessage = String.format("Update status  by = %d exception!", id);
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
@@ -121,12 +124,12 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    public OfferDto updateApprovedByContractor(OfferDto offerDto) throws ServiceException {
+    public OfferDto updateApprovedByContractor(Long id) throws ServiceException {
         try {
-            Offer offer = offerRepository.updateApprovedByContractor(mapper.fromDTO(offerDto));
-            return mapper.toDTO(offer);
+            Offer offer = offerRepository.updateApprovedByContractor(id);
+            return modelMapper.map(offer, OfferDto.class);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Update status = %s exception!", offerDto.getStatus());
+            String exceptionMessage = String.format("Update status  by = %d exception!", id);
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
          }
@@ -134,12 +137,12 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @PreAuthorize("hasAuthority('BIDDER')")
-    public OfferDto updateApprovedByBidder(OfferDto offerDto) throws ServiceException {
+    public OfferDto updateApprovedByBidder(Long id) throws ServiceException {
             try {
-                Offer offer = offerRepository.updateApprovedByBidder(mapper.fromDTO(offerDto));
-                return mapper.toDTO(offer);
+                Offer offer = offerRepository.updateApprovedByBidder(id);
+                return modelMapper.map(offer, OfferDto.class);
             } catch (RepositoryException exception) {
-                String exceptionMessage = String.format("Update status = %s exception!", offerDto.getStatus());
+                String exceptionMessage = String.format("Update status  by = %d exception!", id);
                 log.error(exceptionMessage, exception);
                 throw new ServiceException(exceptionMessage, exception);
             }
@@ -147,27 +150,17 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @PreAuthorize("hasAuthority('BIDDER')")
-    public OfferDto updateDeclinedByBidder(OfferDto offerDto) throws ServiceException {
+    public OfferDto updateDeclinedByBidder(Long id) throws ServiceException {
         try {
-            Offer offer = offerRepository.updateDeclinedByBidder(mapper.fromDTO(offerDto));
-            return mapper.toDTO(offer);
+            Offer offer = offerRepository.updateDeclinedByBidder(id);
+            return modelMapper.map(offer, OfferDto.class);
         } catch (RepositoryException exception) {
-            String exceptionMessage = String.format("Update status = %s exception!", offerDto.getStatus());
+            String exceptionMessage = String.format("Update status  by = %d exception!", id);
             log.error(exceptionMessage, exception);
             throw new ServiceException(exceptionMessage, exception);
         }
     }
 
-    @Override
-    public long count() throws ServiceException {
-        try {
-            return offerRepository.countOfEntity();
-        } catch (DataAccessException exception) {
-            String exceptionMessage = "Count offers service exception!";
-            log.error(exceptionMessage, exception);
-            throw new ServiceException(exceptionMessage, exception);
-        }
-    }
 
     @Override
     public AddOfferDTO collectOfferConstant() throws ServiceException {
