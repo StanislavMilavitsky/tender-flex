@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,31 +25,50 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/offer")
-public class OfferController extends PageController<OfferDto> {
+@RequestMapping("/api/v1/offers")
+public class OfferController implements BindingResultHandler {
 
     private final OfferService offerService;
 
     /**
-     * Find tender by id.
+     * Find tenders by id contractor.
      *
      * @param idUser the id user
-     * @return the response entity
+     * @param pageable meta information of page
+     * @return page with offers
      * @throws ServiceException  the service exception
      * @throws ControllerException if id is incorrect
      */
-    @GetMapping("/offers-contractor")
-    public Page<OfferDto> findAll(@RequestParam(name = "idUser") Long idUser, @PageableDefault(page = 0, size = 20) Pageable pageable)
+    @GetMapping("/contractor")
+    public Page<OfferDto> findAllByContractor(@RequestParam(name = "idUser") Long idUser, @PageableDefault(page = 0, size = 20) Pageable pageable)
             throws ServiceException, IncorrectArgumentException {
-        return offerService.findOffersByIdContractor(pageable, idUser);
+        return offerService.findOffersByContractor(pageable, idUser);
     }
 
-    @GetMapping("/offers-bidder")
+    /**
+     * Find tenders by id contractor.
+     *
+     * @param idUser the id user
+     * @param pageable meta information of page
+     * @return page with offers
+     * @throws ServiceException  the service exception
+     * @throws ControllerException if id is incorrect
+     */
+    @GetMapping("/bidder")
     public Page<OffersTenderBidderDto> findAllByBidder(@RequestParam(value = "idUser") Long  idUser, Pageable pageable
     ) throws ServiceException, IncorrectArgumentException {
-        return offerService.findAllByBidder(pageable, idUser);
+        return offerService.findOffersByBidder(pageable, idUser);
     }
 
+    /**
+     * Create offer and use method from service layer
+     *
+     * @param offerDTO offer entity
+     * @param bindingResult for exceptions
+     * @return offer dto
+     * @throws ServiceException
+     * @throws ControllerException
+     */
     @PostMapping()
     public ResponseEntity<OfferDto> create(@RequestBody @Valid OfferDto offerDTO, BindingResult bindingResult)
             throws ServiceException, ControllerException {
@@ -63,15 +81,18 @@ public class OfferController extends PageController<OfferDto> {
         }
     }
 
+    /**
+     * Find all enums fields and collect to lists
+     *
+     * @return list of enums
+     * @throws ServiceException
+     */
     @GetMapping("/menu-create")
     public ResponseEntity<AddOfferDTO> add()
             throws ServiceException {
         AddOfferDTO result = offerService.collectOfferConstant();
         return  ResponseEntity.ok(result);
     }
-
-
-
 
     /**
      * Find offer by id.
@@ -81,7 +102,7 @@ public class OfferController extends PageController<OfferDto> {
      * @throws ServiceException  the service exception
      * @throws ControllerException if id is incorrect
      */
-    @GetMapping("/contractor")
+    @GetMapping("/details-contractor")
     public ResponseEntity<OfferDto> findByIdContractor(@RequestParam(name = "id") Long id) throws ControllerException, ServiceException {
         if (id > 0) {
             OfferDto offerDto = offerService.findByIdContractor(id);
@@ -100,7 +121,7 @@ public class OfferController extends PageController<OfferDto> {
      * @throws ServiceException  the service exception
      * @throws ControllerException if id is incorrect
      */
-    @GetMapping("/bidder")
+    @GetMapping("/details-bidder")
     public ResponseEntity<OffersTenderBidderDto> findByIdBidder(@RequestParam(name = "id") Long id) throws ControllerException, ServiceException {
         if (id > 0) {
             OffersTenderBidderDto offersTenderBidderDto = offerService.findByIdBidder(id);
@@ -111,6 +132,14 @@ public class OfferController extends PageController<OfferDto> {
         }
     }
 
+    /**
+     * Update status offer reject by contractor
+     *
+     * @param id offer
+     * @return updated offer
+     * @throws ServiceException
+     * @throws ControllerException
+     */
     @PutMapping("/reject-contractor")
     public ResponseEntity<OfferDto> updateRejectByContractor(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
         if (id > 0) {
@@ -122,6 +151,14 @@ public class OfferController extends PageController<OfferDto> {
         }
     }
 
+    /**
+     * Update status offer approved by contractor
+     *
+     * @param id offer
+     * @return updated offer
+     * @throws ServiceException
+     * @throws ControllerException
+     */
     @PutMapping("/approved-contractor")
     public ResponseEntity<OfferDto> updateApprovedByContractor(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
         if (id > 0) {
@@ -133,6 +170,14 @@ public class OfferController extends PageController<OfferDto> {
         }
     }
 
+    /**
+     * Update status offer approved by bidder and closed for tender
+     *
+     * @param id offer
+     * @return updated offer
+     * @throws ServiceException
+     * @throws ControllerException
+     */
     @PutMapping("/approved-bidder")
     public ResponseEntity<OfferDto> updateApprovedByBidder(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
         if (id > 0) {
@@ -144,6 +189,14 @@ public class OfferController extends PageController<OfferDto> {
          }
     }
 
+    /**
+     * Update status offer declined by bidder
+     *
+     * @param id offer
+     * @return updated offer
+     * @throws ServiceException
+     * @throws ControllerException
+     */
     @PutMapping("/declined-bidder")
     public ResponseEntity<OfferDto> updateDeclinedByBidder(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
         if (id > 0) {
@@ -153,10 +206,5 @@ public class OfferController extends PageController<OfferDto> {
             log.error("Negative id exception");
             throw new ControllerException("Negative id exception");
         }
-    }
-
-    @Override
-    public ResponseEntity<PagedModel<OfferDto>> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
-        return null;
     }
 }

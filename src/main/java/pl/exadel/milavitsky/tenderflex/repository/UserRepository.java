@@ -11,8 +11,17 @@ import java.util.Optional;
  */
 public interface UserRepository {
 
+    /**
+     * Find all users
+     * @param pageable size and page of view
+     * @return
+     */
     List<User> findAll(Pageable pageable);
 
+    /**
+     * Count of entity
+     * @return count
+     */
     long countOfEntity();
 
     /**

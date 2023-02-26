@@ -54,9 +54,11 @@ public class Tender extends Company implements Serializable {
 
     private StatusTender statusTender ;
 
+    @Positive(message = "Should be positive")
     private Long idUser;
 
-    private Integer countOfOffers;
+    @Positive(message = "Should be positive")
+    private Long countOfOffers;
 
     private StatusOffer statusOffer;
 }

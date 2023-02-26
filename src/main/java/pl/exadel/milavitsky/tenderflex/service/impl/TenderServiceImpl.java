@@ -59,7 +59,7 @@ public class TenderServiceImpl implements TenderService {
     public Page<TenderDto> findAllByBidder(Pageable pageable, Long id) throws ServiceException {
         try {
             long count = tenderRepository.countOfEntity();
-            List<Tender> tenders = tenderRepository.findAllById(pageable, id);
+            List<Tender> tenders = tenderRepository.findAllByBidder(pageable, id);
             List<TenderDto> tenderDtos = MapperUtil.convertList(tenders, this::convertToTenderDto);
             return new PageImpl<>(tenderDtos,pageable,count);
         } catch (DataAccessException|RepositoryException exception) {
@@ -75,7 +75,7 @@ public class TenderServiceImpl implements TenderService {
     public Page<TenderDto> findAllByContractor(Pageable pageable, Long id) throws ServiceException {
         try {
             long count = tenderRepository.countOfEntity();
-            List<Tender> tenders = tenderRepository.findAllById(pageable, id);
+            List<Tender> tenders = tenderRepository.findAllByContractor(pageable, id);
             List<TenderDto> tenderDtos = MapperUtil.convertList(tenders, this::convertToTenderDto);
             return new PageImpl<>(tenderDtos,pageable,count);
         } catch (DataAccessException|RepositoryException exception) {

@@ -39,7 +39,7 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @PreAuthorize("hasAuthority('CONTRACTOR')")
-    public Page<OfferDto> findOffersByIdContractor(Pageable pageable, Long idUser) throws ServiceException {
+    public Page<OfferDto> findOffersByContractor(Pageable pageable, Long idUser) throws ServiceException {
         try {
             long count = offerRepository.countOfOffersByContractor(idUser);
             List<Offer>  offers = offerRepository.findAllOffersByIdContractor(pageable, idUser);
@@ -54,7 +54,7 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @PreAuthorize("hasAuthority('BIDDER')")
-    public Page<OffersTenderBidderDto> findAllByBidder(Pageable pageable, Long idUser) throws ServiceException {
+    public Page<OffersTenderBidderDto> findOffersByBidder(Pageable pageable, Long idUser) throws ServiceException {
         try {
             long count = offerRepository.countOfOffersByBidder(idUser);
             List<OffersTenderBidderDto> offersTenderBidderDtos = offerRepository.findAllOffersByBidder(pageable, idUser);

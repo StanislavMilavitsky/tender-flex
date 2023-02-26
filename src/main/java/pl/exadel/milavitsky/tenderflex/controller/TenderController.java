@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +25,17 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tender")
-public class TenderController extends PageController<TenderDto> {
+public class TenderController implements BindingResultHandler{
 
     private final TenderService tenderService;
 
-    @GetMapping("/new")
+    /**
+     * Collect all enums fields from entity
+     *
+     * @return list of enums
+     * @throws ServiceException
+     */
+    @GetMapping("/menu-create")
     public ResponseEntity<AddTenderDTO> add()
             throws ServiceException {
             AddTenderDTO result = tenderService.collectTenderConstant();
@@ -39,7 +44,7 @@ public class TenderController extends PageController<TenderDto> {
 
 
     /**
-     * Add tender.
+     * Create tender.
      *
      * @param tenderDto the tender dto
      * @return the response entity
@@ -63,7 +68,7 @@ public class TenderController extends PageController<TenderDto> {
     /**
      * Find tender by id.
      *
-     * @param id the id
+     * @param id the id tender
      * @return the response entity
      * @throws ServiceException  the service exception
      * @throws ControllerException if id is incorrect
@@ -79,15 +84,33 @@ public class TenderController extends PageController<TenderDto> {
         }
     }
 
-    @GetMapping("all-tenders")
-    public Page<TenderDto> findAll(
+    /**
+     * Find all tenders by bidder
+     *
+     * @param id bidder
+     * @param pageable meta data of view page
+     * @return
+     * @throws ServiceException
+     * @throws IncorrectArgumentException
+     */
+    @GetMapping("all-bidder")
+    public Page<TenderDto> findAllByBidder(
             @RequestParam(value = "id") Long id,
             @PageableDefault(page = 0, size = 20) Pageable pageable
     ) throws ServiceException, IncorrectArgumentException {
         return tenderService.findAllByBidder(pageable, id);
     }
 
-    @GetMapping("/all-tenders/")
+    /**
+     * Find all tenders by contractor
+     *
+     * @param id contractor
+     * @param pageable meta data of view page
+     * @return
+     * @throws ServiceException
+     * @throws IncorrectArgumentException
+     */
+    @GetMapping("/all-contractor")
     public Page<TenderDto> findAllByContractor(
             @RequestParam(value = "id") Long id,
             @PageableDefault(page = 0, size = 20) Pageable pageable
@@ -95,8 +118,4 @@ public class TenderController extends PageController<TenderDto> {
         return tenderService.findAllByContractor(pageable, id);
     }
 
-    @Override
-    public ResponseEntity<PagedModel<TenderDto>> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
-        return null;
-    }
 }

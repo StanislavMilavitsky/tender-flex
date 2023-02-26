@@ -14,28 +14,49 @@ import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 
 public interface TenderService {
 
+    /**
+     * Find tender by id
+     *
+     * @param id tender
+     * @return entity tender
+     * @throws ServiceException
+     */
     TenderDto findById(Long id) throws ServiceException;
 
+    /**
+     * Create tender
+     *
+     * @param tenderDto dto of tender
+     * @return created entity
+     * @throws ServiceException service exception
+     */
     TenderDto create(TenderDto tenderDto) throws ServiceException;
 
     /**
-     * Use method findAll in repository layer
+     * Find all tenders by bidder
      *
-     * @return list of all entity
+     * @param pageable page and size of view
+     * @param idUser
+     * @return list of tenders dto
+     * @throws ServiceException
+     * @throws IncorrectArgumentException
      */
-    Page<TenderDto> findAllByBidder(Pageable pageable, Long id) throws ServiceException, IncorrectArgumentException;
+    Page<TenderDto> findAllByBidder(Pageable pageable, Long idUser) throws ServiceException, IncorrectArgumentException;
 
 
     /**
-     * Use method findAllTenderContractor
+     * Find all tenders by contractor
      *
-     * @param
-     * @return list of all tenders of contractor
+     * @param pageable page and size of view
+     * @param idUser
+     * @return list of tenders dto
+     * @throws ServiceException
+     * @throws IncorrectArgumentException
      */
-    Page<TenderDto> findAllByContractor(Pageable pageable, Long id) throws ServiceException, IncorrectArgumentException;
+    Page<TenderDto> findAllByContractor(Pageable pageable, Long idUser) throws ServiceException, IncorrectArgumentException;
 
     /**
-     * Count of all tenders not deleted
+     * Count of all tenders
      *
      * @param idUser of contractor
      * @return count
@@ -43,6 +64,11 @@ public interface TenderService {
      */
     long countTendersContractor(Long idUser) throws ServiceException;
 
-
+    /**
+     * Collect all enums and cpv codes for list
+     *
+     * @return dto with list
+     * @throws ServiceException
+     */
     AddTenderDTO collectTenderConstant() throws ServiceException;
 }

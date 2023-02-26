@@ -6,20 +6,9 @@ public class ConstantRepository {
      * Constants common
      */
     public static final String ID = "id";
-    public static final String PERCENT = "%";
     public static final String STATUS = "status";
     public static final String CURRENCY = "currency";
     public static final String ID_USER = "id_user";
-
-
-    /**
-     * Constants for user entity
-     */
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    public static final String DATE_OF_REGISTRATION = "date_of_registration";
-    public static final String ROLE = "role";
-    public static final String LAST_LOGIN_DATE = "last_login_date";
 
     /**
      * Constants for tender entity

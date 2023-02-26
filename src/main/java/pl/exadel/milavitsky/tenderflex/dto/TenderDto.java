@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -47,6 +46,7 @@ public class TenderDto extends CompanyDto implements Serializable {
 
     private Integer countOfOffers;
 
+    @Positive(message = "Should be positive")
     private Long idUser;
 
     private String statusOffer;

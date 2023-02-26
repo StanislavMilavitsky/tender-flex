@@ -17,6 +17,7 @@ public class CompanyDto implements Serializable {
     @Size(min = 2, max = 20, message = "National registration number be between 2 and 50 characters")
     private String nationalRegistrationNumber;
 
+    @Size(min = 2, max = 20, message = "National registration number be between 2 and 50 characters")
     private String country;
 
     @NotEmpty(message = "City should not be empty")

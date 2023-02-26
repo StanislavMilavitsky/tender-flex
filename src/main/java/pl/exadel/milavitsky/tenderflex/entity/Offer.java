@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
 import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
 
@@ -32,8 +33,10 @@ public class Offer extends Company implements Serializable {
 
     private StatusOffer status;
 
+    @Positive(message = "Should be positive")
     private Long idUser;
 
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate sentDate;
 
 

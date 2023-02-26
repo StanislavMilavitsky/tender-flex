@@ -40,13 +40,20 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
 
-    public static final String FIND_ALL_TENDERS_BY_ID_SQL = "SELECT tn.official_name, tn.country, tn.national_registration_number,tn.city, tn.name, tn.phone_number," +
-            "       tn.surname, tn.cpv_code, tn.status, tn.minimum_tender_value, tn.maximum_tender_value, tn.currency," +
-            "       tn.description_of_the_procurement, tn.publication_date, tn.deadline_for_offer_submission," +
-            "       tn.deadline_for_signing_contract_submission, tn.contract, tn.award_decision, tn.reject_decision," +
-            "       cc.cpv_description" +
-            "    FROM tenders tn" +
-            "    JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code WHERE tn.id_user = ? LIMIT ? OFFSET ?";
+    public static final String FIND_ALL_TENDERS_BIDDER_SQL = "SELECT tn.official_name,tn.cpv_code, tn.status, " +
+            " tn.deadline_for_offer_submission, cc.cpv_description, ofs.status" +
+            " FROM tenders tn" +
+            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
+            " JOIN offers ofs ON tn.id = ofs.id_tender" +
+            " WHERE ofs.id_user = ? LIMIT ? OFFSET ?";
+
+    private static final String FIND_ALL_TENDERS_CONTRACTOR_SQL = "SELECT tn.cpv_code, tn.official_name, tn.status, " +
+            "tn.deadline_for_signing_contract_submission, COUNT(ofs.id) AS \"count_of_offers\", cpv_description" +
+            " FROM tenders tn" +
+            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
+            " JOIN offers ofs ON tn.id = ofs.id_tender" +
+            " WHERE tn.id_user = ?  AND ofs.id_tender = tn.id" +
+            " GROUP BY tn.id, cpv_description LIMIT ? OFFSET ?";
 
     public static final String FIND_TENDER_BY_ID_SQL = "SELECT tn.official_name, tn.country, tn.national_registration_number,tn.city, tn.name, tn.phone_number," +
             "       tn.surname, tn.cpv_code, tn.status, tn.minimum_tender_value, tn.maximum_tender_value, tn.currency," +
@@ -61,14 +68,6 @@ public class TenderRepositoryImpl implements TenderRepository {
 
     private static final String COUNT_OF_ALL_TENDERS_CONTRACTOR_SQL = "SELECT count(*) FROM tenders WHERE id_user = ?;";
 
-    private static final String FIND_ALL_TENDERS_CONTRACTOR_SQL = "SELECT tn.cpv_code, cc.cpv_description, tn.official_name, tn.status, tn.deadline_for_signing_contract_submission, COUNT(ofc.id) AS \"count_of_offers\" " +
-            " FROM tenders tn" +
-            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
-            " JOIN offers ofs tn.id = ofs.id_tender" +
-            " WHERE id_user = ? "+
-            " GROUP BY tn.id " +
-            " HAVING ofc.id_tender = tn.id" +
-            " LIMIT ? OFFSET ?";
 
 
     private static final String FIND_ALL_CPV_CODES_SQL = "SELECT cpv_code, cpv_description FROM cpv_codes; ";
@@ -81,6 +80,7 @@ public class TenderRepositoryImpl implements TenderRepository {
             parameters.put(OFFICIAL_NAME, tender.getOfficialName());
             parameters.put(NATIONAL_REGISTRATION_NUMBER, tender.getNationalRegistrationNumber());
             parameters.put(COUNTRY, tender.getCountry().name());
+            parameters.put(CPV_CODE, tender.getCpvCode());
             parameters.put(CITY, tender.getCity());
             parameters.put(NAME, tender.getName());
             parameters.put(SURNAME, tender.getSurname());
@@ -110,9 +110,21 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
     @Override
-    public List<Tender> findAllById(Pageable pageable, Long id) throws RepositoryException{
+    public List<Tender> findAllByBidder(Pageable pageable, Long idUser) throws RepositoryException{
         try {
-            return jdbcTemplate.query(FIND_ALL_TENDERS_BY_ID_SQL, new BeanPropertyRowMapper<>(Tender.class),
+            return jdbcTemplate.query(FIND_ALL_TENDERS_BIDDER_SQL, new BeanPropertyRowMapper<>(Tender.class),
+                    idUser, pageable.getPageSize(), pageable.getOffset());
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Read tender by id=%d exception sql!", idUser);
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public List<Tender> findAllByContractor(Pageable pageable, Long id) throws RepositoryException{
+        try {
+            return jdbcTemplate.query(FIND_ALL_TENDERS_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Tender.class),
                     id, pageable.getPageSize(), pageable.getOffset());
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Read tender by id=%d exception sql!", id);

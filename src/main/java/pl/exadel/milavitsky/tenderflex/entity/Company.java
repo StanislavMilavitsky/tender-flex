@@ -36,6 +36,7 @@ public abstract class Company implements Serializable {
     @NotEmpty(message = "Phone number should not be empty")
     protected String phoneNumber;
 
+    @Size(min = 2, max = 10, message = "Phone number should be between 2 and 20 characters")
     protected String cpvCode;
 
     protected String cpvDescription;

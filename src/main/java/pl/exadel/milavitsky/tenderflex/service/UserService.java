@@ -9,6 +9,14 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
+    /**
+     * Find all users
+     *
+     * @param pageable page and size of view
+     * @return list of users
+     * @throws ServiceException service exception
+     * @throws IncorrectArgumentException
+     */
     Page<User> findAll(Pageable pageable) throws ServiceException, IncorrectArgumentException;
 
 }
