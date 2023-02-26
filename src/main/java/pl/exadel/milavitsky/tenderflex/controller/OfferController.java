@@ -2,7 +2,9 @@ package pl.exadel.milavitsky.tenderflex.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.Link;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -16,7 +18,6 @@ import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.service.OfferService;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Offer Rest Controller
@@ -33,20 +34,21 @@ public class OfferController extends PageController<OfferDto> {
     /**
      * Find tender by id.
      *
-     * @param id the id
+     * @param idUser the id user
      * @return the response entity
      * @throws ServiceException  the service exception
      * @throws ControllerException if id is incorrect
      */
     @GetMapping("/offers-contractor")
-    public ResponseEntity<PagedModel<OfferDto>> findAll(@RequestParam(name = "id") Long id, @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                                                       @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    public Page<OfferDto> findAll(@RequestParam(name = "idUser") Long idUser, @PageableDefault(page = 0, size = 20) Pageable pageable)
+            throws ServiceException, IncorrectArgumentException {
+        return offerService.findOffersByIdContractor(pageable, idUser);
+    }
+
+    @GetMapping("/offers-bidder")
+    public Page<OffersTenderBidderDto> findAllByBidder(@RequestParam(value = "idUser") Long  idUser, Pageable pageable
     ) throws ServiceException, IncorrectArgumentException {
-        List<OfferDto> offers = offerService.findOfferByIdTender(page, size, id);
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, 1);
-        List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
-        PagedModel<OfferDto> pagedModel = PagedModel.of(offers, pageMetadata, linkList);
-        return ResponseEntity.ok(pagedModel);
+        return offerService.findAllByBidder(pageable, idUser);
     }
 
     @PostMapping()
@@ -69,18 +71,6 @@ public class OfferController extends PageController<OfferDto> {
     }
 
 
-
-    @GetMapping("/offers-bidder")
-    public ResponseEntity<PagedModel<OffersTenderBidderDto>> findAllByBidder(@RequestParam(value = "id") Long  idUser,
-                                                                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                                                             @RequestParam(value = "size", required = false, defaultValue = "3") int size
-    ) throws ServiceException, IncorrectArgumentException {
-        List<OffersTenderBidderDto> offers = offerService.findAllByBidder(page, size, idUser);
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, 1);
-        List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
-        PagedModel<OffersTenderBidderDto> pagedModel = PagedModel.of(offers, pageMetadata, linkList);
-        return ResponseEntity.ok(pagedModel);
-    }
 
 
     /**

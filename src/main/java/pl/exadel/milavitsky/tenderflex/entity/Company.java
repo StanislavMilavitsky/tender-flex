@@ -4,7 +4,6 @@ import lombok.Data;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -36,4 +35,8 @@ public abstract class Company implements Serializable {
     @Size(min = 2, max = 20, message = "Phone number should be between 2 and 20 characters")
     @NotEmpty(message = "Phone number should not be empty")
     protected String phoneNumber;
+
+    protected String cpvCode;
+
+    protected String cpvDescription;
 }

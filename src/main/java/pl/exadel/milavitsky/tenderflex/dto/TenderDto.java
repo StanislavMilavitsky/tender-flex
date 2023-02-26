@@ -17,13 +17,6 @@ import java.io.Serializable;
 @Builder
 public class TenderDto extends CompanyDto implements Serializable {
 
-    @Size(min = 2, max = 20, message = "CPV code should be between 2 and 20 characters")
-    @NotEmpty(message = "Phone number should not be empty")
-    private String cpvCode;
-
-    @Size(min = 2, max = 30, message = "CPV description should be between 2 and 30 characters")
-    private String cpvDescription;
-
     private String typeOfTender;
 
     @Size(min = 2, max = 250, message = "Description of the procurement should be between 2 and 250 characters")

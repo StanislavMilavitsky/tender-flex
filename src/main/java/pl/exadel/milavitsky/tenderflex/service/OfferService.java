@@ -1,12 +1,13 @@
 package pl.exadel.milavitsky.tenderflex.service;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import pl.exadel.milavitsky.tenderflex.dto.AddOfferDTO;
 import pl.exadel.milavitsky.tenderflex.dto.OfferDto;
 import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 
-import java.util.List;
 
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
 
 public interface OfferService {
 
-    List<OfferDto> findOfferByIdTender(int page, int size, Long id) throws ServiceException, IncorrectArgumentException;
+    Page<OfferDto> findOffersByIdContractor(Pageable pageable, Long idUser) throws ServiceException, IncorrectArgumentException;
 
     OfferDto findByIdContractor(Long id) throws ServiceException;
 
@@ -23,7 +24,7 @@ public interface OfferService {
 
     AddOfferDTO collectOfferConstant() throws ServiceException;
 
-    List<OffersTenderBidderDto> findAllByBidder(int page, int size, Long idUser) throws ServiceException, IncorrectArgumentException;
+    Page<OffersTenderBidderDto> findAllByBidder(Pageable pageable, Long idUser) throws ServiceException, IncorrectArgumentException;
 
     OffersTenderBidderDto findByIdBidder(Long id) throws ServiceException;
 

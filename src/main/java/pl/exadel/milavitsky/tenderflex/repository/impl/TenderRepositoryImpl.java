@@ -40,13 +40,21 @@ public class TenderRepositoryImpl implements TenderRepository {
     }
 
 
+    public static final String FIND_ALL_TENDERS_BY_ID_SQL = "SELECT tn.official_name, tn.country, tn.national_registration_number,tn.city, tn.name, tn.phone_number," +
+            "       tn.surname, tn.cpv_code, tn.status, tn.minimum_tender_value, tn.maximum_tender_value, tn.currency," +
+            "       tn.description_of_the_procurement, tn.publication_date, tn.deadline_for_offer_submission," +
+            "       tn.deadline_for_signing_contract_submission, tn.contract, tn.award_decision, tn.reject_decision," +
+            "       cc.cpv_description" +
+            "    FROM tenders tn" +
+            "    JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code WHERE tn.id_user = ? LIMIT ? OFFSET ?";
+
     public static final String FIND_TENDER_BY_ID_SQL = "SELECT tn.official_name, tn.country, tn.national_registration_number,tn.city, tn.name, tn.phone_number," +
             "       tn.surname, tn.cpv_code, tn.status, tn.minimum_tender_value, tn.maximum_tender_value, tn.currency," +
             "       tn.description_of_the_procurement, tn.publication_date, tn.deadline_for_offer_submission," +
             "       tn.deadline_for_signing_contract_submission, tn.contract, tn.award_decision, tn.reject_decision," +
             "       cc.cpv_description" +
             "    FROM tenders tn" +
-            "    JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code WHERE tn.id_user =? LIMIT ? OFFSET ?";
+            "    JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code WHERE tn.id = ?";
 
 
     private static final String COUNT_OF_ALL_TENDERS_SQL = "SELECT count(*) FROM tenders;";
@@ -104,7 +112,7 @@ public class TenderRepositoryImpl implements TenderRepository {
     @Override
     public List<Tender> findAllById(Pageable pageable, Long id) throws RepositoryException{
         try {
-            return jdbcTemplate.query(FIND_TENDER_BY_ID_SQL, new BeanPropertyRowMapper<>(Tender.class),
+            return jdbcTemplate.query(FIND_ALL_TENDERS_BY_ID_SQL, new BeanPropertyRowMapper<>(Tender.class),
                     id, pageable.getPageSize(), pageable.getOffset());
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Read tender by id=%d exception sql!", id);

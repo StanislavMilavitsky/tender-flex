@@ -3,6 +3,7 @@ package pl.exadel.milavitsky.tenderflex.repository.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -30,7 +31,6 @@ public class OfferRepositoryImpl implements OfferRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private SimpleJdbcInsert jdbcInsert;
-
     @PostConstruct
     private void postConstruct() {
         jdbcInsert = new SimpleJdbcInsert(dataSource)
@@ -38,15 +38,13 @@ public class OfferRepositoryImpl implements OfferRepository {
                 .usingGeneratedKeyColumns(ID);
     }
 
-    public static final String FIND_OFFERS_BY_ID_TENDER_SQL = "SELECT ofs.id, ofs.company_bidder, ofs.offer," +
-            " ofs.offer_description, ofs.id_tender, ofs.answer" +
+
+    public static final String FIND_OFFERS_BY_ID_CONTRACTOR_SQL = "SELECT ofs.id, ofs.official_name," +
+            " ofs.bid_price, ofs.country, ofs.sent_date, ofs.status, cc.cpv_description " +
             "  FROM offers ofs " +
             " JOIN tenders tn ON ofs.id_tender = tn.id" +
-            " WHERE ofs.id_tender = ? and tn.is_deleted = false;";
-
-    private static final String COUNT_OF_ALL_OFFERS = "SELECT count(*) FROM offers" +
-            "INNER JOIN tenders tn ON of.id_tender = tn.id" +
-            " WHERE id_tender = ? and tn.is_deleted = false;";
+            " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
+            " WHERE tn.id_user = ? LIMIT ? OFFSET ?";
 
     private static final String FIND_OFFERS_BY_ID_BIDDER_SQL = "SELECT tn.official_name, cc.cpv_description, ofs.currency, ofs.bid_price," +
             " tn.country, ofs.sent_date, ofs.status, ofs.id" +
@@ -54,6 +52,8 @@ public class OfferRepositoryImpl implements OfferRepository {
             " JOIN tenders tn ON  ofs.id_tender = tn.id" +
             " JOIN cpv_codes cc ON tn.cpv_code = cc.cpv_code" +
             " WHERE ofs.id_user = ? LIMIT ? OFFSET ?" ;
+
+
 
     private static final String FIND_OFFER_BY_ID_CONTRACTOR_SQL = "SELECT ofs.official_name, ofs.country, ofs.national_registration_number, ofs.city," +
             " ofs.name, ofs.phone_number, ofs.surname, ofs.bid_price, ofs.currency, ofs.document, ofs.status, ofs.sent_date" +
@@ -82,12 +82,30 @@ public class OfferRepositoryImpl implements OfferRepository {
     private static final String UPDATE_STATUS_DECLINED_BY_BIDDER_SQL = "UPDATE offers SET status = ?" +
             " WHERE id = ?;";
 
+    private static final String COUNT_OF_ALL_OFFERS_CONTRACTOR = "SELECT count(*) FROM offers ofs " +
+            "INNER JOIN tenders tn ON ofs.id_tender = tn.id" +
+            " WHERE tn.id_user = ?";
+
+    private static final String COUNT_OF_ALL_OFFERS_BIDDER = "SELECT count(*) FROM offers" +
+            " WHERE id_user= ?" ;
+
     @Override
-    public List<Offer> findAllOffersByIdTender(int offset, int limit, Long id) throws RepositoryException {
+    public List<Offer> findAllOffersByIdContractor(Pageable pageable, Long idUser) throws RepositoryException {
         try {
-            return jdbcTemplate.query(FIND_OFFERS_BY_ID_TENDER_SQL, new BeanPropertyRowMapper<>(Offer.class), id);
+            return jdbcTemplate.query(FIND_OFFERS_BY_ID_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Offer.class),idUser, pageable.getPageSize(), pageable.getOffset());
         } catch (DataAccessException exception) {
-            String exceptionMessage = String.format("Read offer by id=%d exception sql!", id);
+            String exceptionMessage = String.format("Read offer by id=%d exception sql!", idUser);
+            log.error(exceptionMessage, exception);
+            throw new RepositoryException(exceptionMessage, exception);
+        }
+    }
+
+    @Override
+    public List<OffersTenderBidderDto> findAllOffersByBidder(Pageable pageable, Long idUser) throws RepositoryException {
+        try {
+        return jdbcTemplate.query(FIND_OFFERS_BY_ID_BIDDER_SQL, new BeanPropertyRowMapper<>(OffersTenderBidderDto.class),idUser, pageable.getPageSize(), pageable.getOffset());
+        } catch (DataAccessException exception) {
+            String exceptionMessage = String.format("Read offer by id=%d exception sql!", idUser);
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
@@ -120,12 +138,6 @@ public class OfferRepositoryImpl implements OfferRepository {
             log.error(exceptionMessage, exception);
             throw new RepositoryException(exceptionMessage, exception);
         }
-    }
-
-    @Override
-    public List<OffersTenderBidderDto> findAllOffersByBidder(int offset, int limit, Long idUser) throws RepositoryException {
-        return jdbcTemplate.query(FIND_OFFERS_BY_ID_BIDDER_SQL, new BeanPropertyRowMapper<>(OffersTenderBidderDto.class),idUser, limit, offset);
-
     }
 
     @Override
@@ -200,7 +212,14 @@ public class OfferRepositoryImpl implements OfferRepository {
     }
 
     @Override
-    public long countOfEntity() {
-        return jdbcTemplate.queryForObject(COUNT_OF_ALL_OFFERS, Long.class);
+    public long countOfOffersByContractor(Long idUser) {
+        return jdbcTemplate.queryForObject(COUNT_OF_ALL_OFFERS_CONTRACTOR, Long.class, idUser);
     }
+
+    @Override
+    public long countOfOffersByBidder(Long idUser) {
+        return jdbcTemplate.queryForObject(COUNT_OF_ALL_OFFERS_BIDDER, Long.class, idUser);
+    }
+
+
 }

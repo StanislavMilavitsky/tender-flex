@@ -24,10 +24,6 @@ public class Tender extends Company implements Serializable {
     @Positive(message = "Should be positive")
     protected Long id;
 
-    private String cpvCode;
-
-    private String cpvDescription;
-
     private TypeOfTender typeOfTender;
 
     @Size(min = 2, max = 250, message = "Description of the procurement should be between 2 and 250 characters")

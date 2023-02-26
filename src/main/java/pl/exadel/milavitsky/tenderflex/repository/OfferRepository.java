@@ -1,6 +1,7 @@
 package pl.exadel.milavitsky.tenderflex.repository;
 
 
+import org.springframework.data.domain.Pageable;
 import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.entity.Offer;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
@@ -15,21 +16,14 @@ public interface OfferRepository {
     /**
      * Find all offers by id tender
      *
-     * @param id tender
+     * @param idUser tender
      * @return list of offers
      */
-     List<Offer> findAllOffersByIdTender(int offset, int limit, Long id) throws RepositoryException;
+     List<Offer> findAllOffersByIdContractor(Pageable pageable, Long idUser) throws RepositoryException;
 
      Offer create(Offer offer) throws RepositoryException;
 
-    /**
-     * Count of offers
-     *
-     * @return count
-     */
-    long countOfEntity();
-
-    List<OffersTenderBidderDto> findAllOffersByBidder(int offset, int limit, Long idUser) throws RepositoryException;
+    List<OffersTenderBidderDto> findAllOffersByBidder(Pageable pageable, Long idUser) throws RepositoryException;
 
     Offer findByIdContractor(Long id) throws RepositoryException;
 
@@ -42,4 +36,8 @@ public interface OfferRepository {
     Offer updateApprovedByBidder(Long id) throws RepositoryException;
 
     Offer updateDeclinedByBidder(Long id) throws RepositoryException;
+
+    long countOfOffersByContractor(Long idUser);
+
+    long countOfOffersByBidder(Long idUser);
 }
