@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.entity.Offer;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusTender;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.repository.OfferRepository;
 
@@ -141,7 +143,8 @@ public class OfferRepositoryImpl implements OfferRepository {
     }
 
     @Override
-    public Offer findByIdContractor(Long id) throws RepositoryException {
+    public Offer
+    findByIdContractor(Long id) throws RepositoryException {
         try {
             return jdbcTemplate.queryForObject(FIND_OFFER_BY_ID_CONTRACTOR_SQL, new BeanPropertyRowMapper<>(Offer.class), id);
         } catch (DataAccessException exception) {
@@ -165,7 +168,7 @@ public class OfferRepositoryImpl implements OfferRepository {
     @Override
     public Offer updateRejectByContractor(Long id) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_STATUS_REJECT_BY_CONTRACTOR_SQL, "OFFER_REJECTED_BY_CONTRACTOR", id);
+            int rows = jdbcTemplate.update(UPDATE_STATUS_REJECT_BY_CONTRACTOR_SQL,StatusOffer.OFFER_REJECTED_BY_CONTRACTOR.name() , id);
             return  rows > 0L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);
@@ -177,7 +180,7 @@ public class OfferRepositoryImpl implements OfferRepository {
     @Override
     public Offer updateApprovedByContractor(Long id) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_CONTRACTOR_SQL,"OFFER_APPROVED_BY_CONTRACTOR", id);
+            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_CONTRACTOR_SQL,StatusOffer.OFFER_APPROVED_BY_CONTRACTOR.name(), id);
             return  rows > 0L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);
@@ -189,8 +192,8 @@ public class OfferRepositoryImpl implements OfferRepository {
     @Override
     public Offer updateApprovedByBidder(Long id) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_BIDDER_SQL,"CONTRACT_APPROVED_BY_BIDDER", id);
-            int rows2 = jdbcTemplate.update(UPDATE_STATUS_CLOSED_BY_BIDDER_SQL,"CLOSED", id);
+            int rows = jdbcTemplate.update(UPDATE_STATUS_APPROVED_BY_BIDDER_SQL,StatusOffer.CONTRACT_APPROVED_BY_BIDDER.name(), id);
+            int rows2 = jdbcTemplate.update(UPDATE_STATUS_CLOSED_BY_BIDDER_SQL, StatusTender.CLOSED.name(), id);
             return  rows + rows2 > 1L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);
@@ -202,7 +205,7 @@ public class OfferRepositoryImpl implements OfferRepository {
     @Override
     public Offer updateDeclinedByBidder(Long id) throws RepositoryException {
         try {
-            int rows = jdbcTemplate.update(UPDATE_STATUS_DECLINED_BY_BIDDER_SQL, "CONTRACT_DECLINED_BY_BIDDER", id);
+            int rows = jdbcTemplate.update(UPDATE_STATUS_DECLINED_BY_BIDDER_SQL, StatusOffer.CONTRACT_DECLINED_BY_BIDDER.name(), id);
             return  rows > 0L ? findByIdContractor(id) : null;
         } catch (DataAccessException exception) {
             String exceptionMessage = String.format("Update tender by id=%d exception sql!", id);

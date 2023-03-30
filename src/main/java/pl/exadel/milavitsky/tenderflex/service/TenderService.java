@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDto;
-import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 
 
@@ -39,9 +38,8 @@ public interface TenderService {
      * @param idUser
      * @return list of tenders dto
      * @throws ServiceException
-     * @throws IncorrectArgumentException
      */
-    Page<TenderDto> findAllByBidder(Pageable pageable, Long idUser) throws ServiceException, IncorrectArgumentException;
+    Page<TenderDto> findAllByBidder(Pageable pageable, Long idUser) throws ServiceException;
 
 
     /**
@@ -51,9 +49,8 @@ public interface TenderService {
      * @param idUser
      * @return list of tenders dto
      * @throws ServiceException
-     * @throws IncorrectArgumentException
      */
-    Page<TenderDto> findAllByContractor(Pageable pageable, Long idUser) throws ServiceException, IncorrectArgumentException;
+    Page<TenderDto> findAllByContractor(Pageable pageable, Long idUser) throws ServiceException;
 
     /**
      * Count of all tenders

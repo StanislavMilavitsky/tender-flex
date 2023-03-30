@@ -12,7 +12,6 @@ import pl.exadel.milavitsky.tenderflex.dto.AddOfferDTO;
 import pl.exadel.milavitsky.tenderflex.dto.OfferDto;
 import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
-import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.service.OfferService;
 
@@ -37,7 +36,6 @@ public class OfferController implements BindingResultHandler {
      * @param pageable meta information of page
      * @return page with offers
      * @throws ServiceException  the service exception
-     * @throws ControllerException if id is incorrect
      */
     @GetMapping("/contractor")
     public Page<OfferDto> findAllByContractor(@RequestParam(name = "idUser") Long idUser, @PageableDefault(page = 0, size = 20) Pageable pageable)
@@ -52,7 +50,6 @@ public class OfferController implements BindingResultHandler {
      * @param pageable meta information of page
      * @return page with offers
      * @throws ServiceException  the service exception
-     * @throws ControllerException if id is incorrect
      */
     @GetMapping("/bidder")
     public Page<OffersTenderBidderDto> findAllByBidder(@RequestParam(value = "idUser") Long  idUser, Pageable pageable
@@ -66,18 +63,18 @@ public class OfferController implements BindingResultHandler {
      * @param offerDTO offer entity
      * @param bindingResult for exceptions
      * @return offer dto
-     * @throws ServiceException
-     * @throws ControllerException
+     * @throws ServiceException the service exception
+     * @throws ControllerException the controller exception
      */
     @PostMapping()
     public ResponseEntity<OfferDto> create(@RequestBody @Valid OfferDto offerDTO, BindingResult bindingResult)
             throws ServiceException, ControllerException {
-        if (bindingResult.hasErrors()) {
-            log.error(bindingResultHandler(bindingResult));
-            throw new ControllerException(bindingResultHandler(bindingResult));
-        } else {
+        if (!bindingResult.hasErrors()) {
             OfferDto result = offerService.create(offerDTO);
             return ResponseEntity.ok(result);
+        } else {
+            log.error(bindingResultHandler(bindingResult));
+            throw new ControllerException(bindingResultHandler(bindingResult));
         }
     }
 
@@ -85,9 +82,9 @@ public class OfferController implements BindingResultHandler {
      * Find all enums fields and collect to lists
      *
      * @return list of enums
-     * @throws ServiceException
+     * @throws ServiceException the service exception
      */
-    @GetMapping("/menu-create")
+    @GetMapping("/menu-offer")
     public ResponseEntity<AddOfferDTO> add()
             throws ServiceException {
         AddOfferDTO result = offerService.collectOfferConstant();
@@ -100,17 +97,11 @@ public class OfferController implements BindingResultHandler {
      * @param id the id offer
      * @return the response entity
      * @throws ServiceException  the service exception
-     * @throws ControllerException if id is incorrect
      */
     @GetMapping("/details-contractor")
-    public ResponseEntity<OfferDto> findByIdContractor(@RequestParam(name = "id") Long id) throws ControllerException, ServiceException {
-        if (id > 0) {
+    public ResponseEntity<OfferDto> findByIdContractor(@RequestParam(name = "id") Long id) throws ServiceException {
             OfferDto offerDto = offerService.findByIdContractor(id);
             return ResponseEntity.ok(offerDto);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
     }
 
     /**
@@ -118,18 +109,12 @@ public class OfferController implements BindingResultHandler {
      *
      * @param id the id offer
      * @return the response entity
-     * @throws ServiceException  the service exception
-     * @throws ControllerException if id is incorrect
+     * @throws ServiceException the service exception
      */
     @GetMapping("/details-bidder")
-    public ResponseEntity<OffersTenderBidderDto> findByIdBidder(@RequestParam(name = "id") Long id) throws ControllerException, ServiceException {
-        if (id > 0) {
+    public ResponseEntity<OffersTenderBidderDto> findByIdBidder(@RequestParam(name = "id") Long id) throws ServiceException {
             OffersTenderBidderDto offersTenderBidderDto = offerService.findByIdBidder(id);
             return ResponseEntity.ok(offersTenderBidderDto);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
     }
 
     /**
@@ -137,18 +122,12 @@ public class OfferController implements BindingResultHandler {
      *
      * @param id offer
      * @return updated offer
-     * @throws ServiceException
-     * @throws ControllerException
+     * @throws ServiceException the service exception
      */
     @PutMapping("/reject-contractor")
-    public ResponseEntity<OfferDto> updateRejectByContractor(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
-        if (id > 0) {
+    public ResponseEntity<OfferDto> updateRejectByContractor(@RequestParam(name = "id") Long id) throws ServiceException {
             OfferDto result = offerService.updateRejectByContractor(id);
             return ResponseEntity.ok(result);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
     }
 
     /**
@@ -156,18 +135,12 @@ public class OfferController implements BindingResultHandler {
      *
      * @param id offer
      * @return updated offer
-     * @throws ServiceException
-     * @throws ControllerException
+     * @throws ServiceException the service exception
      */
     @PutMapping("/approved-contractor")
-    public ResponseEntity<OfferDto> updateApprovedByContractor(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
-        if (id > 0) {
+    public ResponseEntity<OfferDto> updateApprovedByContractor(@RequestParam(name = "id") Long id) throws ServiceException {
             OfferDto result = offerService.updateApprovedByContractor(id);
             return ResponseEntity.ok(result);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
     }
 
     /**
@@ -175,18 +148,12 @@ public class OfferController implements BindingResultHandler {
      *
      * @param id offer
      * @return updated offer
-     * @throws ServiceException
-     * @throws ControllerException
+     * @throws ServiceException the service exception
      */
     @PutMapping("/approved-bidder")
-    public ResponseEntity<OfferDto> updateApprovedByBidder(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
-        if (id > 0) {
+    public ResponseEntity<OfferDto> updateApprovedByBidder(@RequestParam(name = "id") Long id) throws ServiceException {
             OfferDto result = offerService.updateApprovedByBidder(id);
             return ResponseEntity.ok(result);
-    } else {
-        log.error("Negative id exception");
-        throw new ControllerException("Negative id exception");
-         }
     }
 
     /**
@@ -194,17 +161,11 @@ public class OfferController implements BindingResultHandler {
      *
      * @param id offer
      * @return updated offer
-     * @throws ServiceException
-     * @throws ControllerException
+     * @throws ServiceException the service exception
      */
     @PutMapping("/declined-bidder")
-    public ResponseEntity<OfferDto> updateDeclinedByBidder(@RequestParam(name = "id") Long id) throws ServiceException, ControllerException {
-        if (id > 0) {
+    public ResponseEntity<OfferDto> updateDeclinedByBidder(@RequestParam(name = "id") Long id) throws ServiceException {
             OfferDto result = offerService.updateDeclinedByBidder(id);
             return ResponseEntity.ok(result);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
     }
 }

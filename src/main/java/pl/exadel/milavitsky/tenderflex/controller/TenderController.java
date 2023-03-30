@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.exadel.milavitsky.tenderflex.dto.AddTenderDTO;
 import pl.exadel.milavitsky.tenderflex.dto.TenderDto;
 import pl.exadel.milavitsky.tenderflex.exception.ControllerException;
-import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.service.TenderService;
 
@@ -33,9 +32,9 @@ public class TenderController implements BindingResultHandler{
      * Collect all enums fields from entity
      *
      * @return list of enums
-     * @throws ServiceException
+     * @throws ServiceException the service exception
      */
-    @GetMapping("/menu-create")
+    @GetMapping("/menu-tender")
     public ResponseEntity<AddTenderDTO> add()
             throws ServiceException {
             AddTenderDTO result = tenderService.collectTenderConstant();
@@ -56,11 +55,11 @@ public class TenderController implements BindingResultHandler{
     public ResponseEntity<TenderDto> create(@RequestBody @Valid TenderDto tenderDto, BindingResult bindingResult)
             throws ServiceException, ControllerException {
         if (bindingResult.hasErrors()) {
-            log.error(bindingResultHandler(bindingResult));
-            throw new ControllerException(bindingResultHandler(bindingResult));
-        } else {
             TenderDto result = tenderService.create(tenderDto);
             return ResponseEntity.ok(result);
+        } else {
+            log.error(bindingResultHandler(bindingResult));
+            throw new ControllerException(bindingResultHandler(bindingResult));
         }
     }
 
@@ -71,17 +70,11 @@ public class TenderController implements BindingResultHandler{
      * @param id the id tender
      * @return the response entity
      * @throws ServiceException  the service exception
-     * @throws ControllerException if id is incorrect
      */
     @GetMapping()
-    public ResponseEntity<TenderDto> findById(@RequestParam(name = "id") Long id) throws ControllerException, ServiceException {
-        if (id > 0) {
+    public ResponseEntity<TenderDto> findById(@RequestParam(name = "id") Long id) throws ServiceException {
             TenderDto tenderDto = tenderService.findById(id);
             return ResponseEntity.ok(tenderDto);
-        } else {
-            log.error("Negative id exception");
-            throw new ControllerException("Negative id exception");
-        }
     }
 
     /**
@@ -89,8 +82,8 @@ public class TenderController implements BindingResultHandler{
      *
      * @param id bidder
      * @param pageable meta data of view page
-     * @return
-     * @throws ServiceException
+     * @return page of tender dto
+     * @throws ServiceException the service exception
      * @throws IncorrectArgumentException
      */
     @GetMapping("all-bidder")
@@ -106,7 +99,7 @@ public class TenderController implements BindingResultHandler{
      *
      * @param id contractor
      * @param pageable meta data of view page
-     * @return
+     * @return page of tender dto
      * @throws ServiceException
      * @throws IncorrectArgumentException
      */

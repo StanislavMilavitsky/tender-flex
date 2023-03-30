@@ -9,11 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.exadel.milavitsky.tenderflex.entity.User;
-import pl.exadel.milavitsky.tenderflex.exception.IncorrectArgumentException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.repository.UserRepository;
 import pl.exadel.milavitsky.tenderflex.service.UserService;
@@ -30,16 +28,15 @@ import java.util.List;
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Page<User> findAll(Pageable pageable) throws ServiceException, IncorrectArgumentException {
+    public Page<User> findAll(Pageable pageable) throws ServiceException {
         try {
             List<User> users = userRepository.findAll(pageable);
             long cont = userRepository.countOfEntity();
-            Page<User> pages = new PageImpl<User>(users, pageable, cont);
+            Page<User> pages = new PageImpl<>(users, pageable, cont);
             return pages;
         } catch (DataAccessException exception) {
             String exceptionMessage = "Find all users service exception!";

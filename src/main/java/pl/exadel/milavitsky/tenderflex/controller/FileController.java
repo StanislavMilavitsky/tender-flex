@@ -21,9 +21,9 @@ import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_PATTE
 @RequestMapping(value = "/file")
 public class FileController {
 
-    private MinioService minioService;
+    private final MinioService minioService;
 
-    @GetMapping(value = "/**")
+    @GetMapping()
     public ResponseEntity<Object> getFile(HttpServletRequest request) throws IOException {
         String pattern = (String) request.getAttribute(BEST_MATCHING_PATTERN_ATTRIBUTE);
         String filename = new AntPathMatcher().extractPathWithinPattern(pattern, request.getServletPath());
@@ -32,7 +32,7 @@ public class FileController {
                 .body(IOUtils.toByteArray(minioService.getObject(filename)));
     }
 
-    @PostMapping(value = "/upload")
+    @PostMapping()
     public ResponseEntity<Object> upload(@ModelAttribute FileDto request) {
         return ResponseEntity.ok().body(minioService.uploadFile(request));
     }

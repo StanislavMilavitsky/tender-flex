@@ -1,9 +1,6 @@
 package pl.exadel.milavitsky.tenderflex.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
 import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
@@ -15,6 +12,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

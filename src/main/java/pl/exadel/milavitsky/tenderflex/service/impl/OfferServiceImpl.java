@@ -18,6 +18,7 @@ import pl.exadel.milavitsky.tenderflex.dto.OffersTenderBidderDto;
 import pl.exadel.milavitsky.tenderflex.entity.Offer;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Country;
 import pl.exadel.milavitsky.tenderflex.entity.enums.Currency;
+import pl.exadel.milavitsky.tenderflex.entity.enums.StatusOffer;
 import pl.exadel.milavitsky.tenderflex.exception.RepositoryException;
 import pl.exadel.milavitsky.tenderflex.exception.ServiceException;
 import pl.exadel.milavitsky.tenderflex.repository.OfferRepository;
@@ -70,7 +71,7 @@ public class OfferServiceImpl implements OfferService {
     @PreAuthorize("hasAuthority('BIDDER')")
     public OfferDto create(OfferDto offerDTO) throws ServiceException {
         try {
-            offerDTO.setStatus("OFFER_SENT");
+            offerDTO.setStatus(StatusOffer.OFFER_SENT.name());
             offerDTO.setSentDate(LocalDate.now().toString());
             Offer offer = modelMapper.map(offerDTO, Offer.class);
             offer = offerRepository.create(offer);
@@ -175,8 +176,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     private OfferDto convertToOfferDto(Offer offer) {
-        OfferDto offerDto = modelMapper.map(offer, OfferDto.class);
-        return offerDto;
+        return modelMapper.map(offer, OfferDto.class);
     }
 
 }
