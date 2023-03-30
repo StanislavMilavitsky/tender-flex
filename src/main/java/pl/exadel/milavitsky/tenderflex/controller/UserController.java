@@ -27,11 +27,10 @@ public class UserController{
      * Find all users use method from service layer
      *
      * @return list of users
-     * @throws ServiceException           if cant find users
-     * @throws IncorrectArgumentException if incorrect argument
+     * @throws ServiceException if cant find users
      */
     @GetMapping
-    public Page<User> findAll(@PageableDefault(page = 0, size = 20) Pageable pageable) throws ServiceException, IncorrectArgumentException {
+    public Page<User> findAll(@PageableDefault(page = 0, size = 20) Pageable pageable) throws ServiceException{
         return userService.findAll(pageable);
     }
 

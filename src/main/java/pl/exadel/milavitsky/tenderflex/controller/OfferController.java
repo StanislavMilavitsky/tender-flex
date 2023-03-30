@@ -39,7 +39,7 @@ public class OfferController implements BindingResultHandler {
      */
     @GetMapping("/contractor")
     public Page<OfferDto> findAllByContractor(@RequestParam(name = "idUser") Long idUser, @PageableDefault(page = 0, size = 20) Pageable pageable)
-            throws ServiceException, IncorrectArgumentException {
+            throws ServiceException {
         return offerService.findOffersByContractor(pageable, idUser);
     }
 
@@ -53,7 +53,7 @@ public class OfferController implements BindingResultHandler {
      */
     @GetMapping("/bidder")
     public Page<OffersTenderBidderDto> findAllByBidder(@RequestParam(value = "idUser") Long  idUser, Pageable pageable
-    ) throws ServiceException, IncorrectArgumentException {
+    ) throws ServiceException {
         return offerService.findOffersByBidder(pageable, idUser);
     }
 

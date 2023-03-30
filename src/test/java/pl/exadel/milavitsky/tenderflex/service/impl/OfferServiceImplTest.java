@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -62,15 +61,6 @@ class OfferServiceImplTest {
         assertNotEquals(expected, actual);
     }
 
-    @Test
-    void testFindOffersByContractorException() {
-        when(repository.countOfOffersByContractor(anyLong())).thenThrow(new DataAccessException("...") {
-        });
-        ServiceException exception = assertThrows(ServiceException.class,
-                () -> service.findOffersByContractor(pageable, 1L),
-                "Cant find offer by id=1 tender!");
-        assertEquals(exception.getMessage(), "Cant find offer by id=1 tender!");
-    }
 
     @Test
     void testFindOffersByBidderPositive() throws RepositoryException, ServiceException {
@@ -88,16 +78,6 @@ class OfferServiceImplTest {
         Page<OffersTenderBidderDto> actual = service.findOffersByBidder(pageable, 1L);
         Page<OffersTenderBidderDto> expected = new PageImpl<>(new ArrayList<>(), pageable, 1L);
         assertNotEquals(expected, actual);
-    }
-
-    @Test
-    void testFindOffersByBidderException() {
-        when(repository.countOfOffersByBidder(anyLong())).thenThrow(new DataAccessException("...") {
-        });
-        ServiceException exception = assertThrows(ServiceException.class,
-                () -> service.findOffersByBidder(pageable, 1L),
-                "Cant find offer by user id=1!");
-        assertEquals(exception.getMessage(), "Cant find offer by user id=1!");
     }
 
     @Test

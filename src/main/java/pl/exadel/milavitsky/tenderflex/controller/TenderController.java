@@ -84,13 +84,12 @@ public class TenderController implements BindingResultHandler{
      * @param pageable meta data of view page
      * @return page of tender dto
      * @throws ServiceException the service exception
-     * @throws IncorrectArgumentException
      */
     @GetMapping("all-bidder")
     public Page<TenderDto> findAllByBidder(
             @RequestParam(value = "id") Long id,
             @PageableDefault(page = 0, size = 20) Pageable pageable
-    ) throws ServiceException, IncorrectArgumentException {
+    ) throws ServiceException {
         return tenderService.findAllByBidder(pageable, id);
     }
 
@@ -101,13 +100,12 @@ public class TenderController implements BindingResultHandler{
      * @param pageable meta data of view page
      * @return page of tender dto
      * @throws ServiceException
-     * @throws IncorrectArgumentException
      */
     @GetMapping("/all-contractor")
     public Page<TenderDto> findAllByContractor(
             @RequestParam(value = "id") Long id,
             @PageableDefault(page = 0, size = 20) Pageable pageable
-    ) throws ServiceException, IncorrectArgumentException {
+    ) throws ServiceException {
         return tenderService.findAllByContractor(pageable, id);
     }
 
